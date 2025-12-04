@@ -1,0 +1,43 @@
+.demo-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.demo-container h1 {
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: #1f2937;
+}
+
+.demo-section {
+  margin-bottom: 48px;
+  padding: 24px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+}
+
+.demo-section h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #374151;
+}
+
+.demo-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.demo-row:last-child {
+  margin-bottom: 0;
+}
+
+.demo-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+}

@@ -1,0 +1,85 @@
+.quick-actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quick-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.quick-action-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.quick-action-button:active {
+  transform: translateY(0);
+}
+
+.quick-action-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.quick-action-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.quick-action-button:hover .quick-action-icon {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.quick-action-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1f2937;
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .quick-actions-grid {
+    gap: 0.625rem;
+  }
+
+  .quick-action-button {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .quick-action-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .quick-action-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .quick-action-label {
+    font-size: 0.875rem;
+  }
+}

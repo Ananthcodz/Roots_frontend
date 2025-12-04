@@ -1,35 +1,127 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { UserProvider } from './contexts/UserContext';
+import { FamilyProvider } from './contexts/FamilyContext';
+import { MemoryProvider } from './contexts/MemoryContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
+import LandingPage from './pages/LandingPage';
+import SignUpPage from './pages/SignUpPage';
+import SignInPage from './pages/SignInPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import ProfileSetupPage from './pages/ProfileSetupPage';
+import OnboardingSuccessPage from './pages/OnboardingSuccessPage';
+import DashboardPage from './pages/DashboardPage';
+import AddFamilyMemberPage from './pages/AddFamilyMemberPage';
+import UploadPhotosPage from './pages/UploadPhotosPage';
+import JoinFamilyTreePage from './pages/JoinFamilyTreePage';
+import FamilyTreePage from './pages/FamilyTreePage';
+import ComponentDemo from './pages/ComponentDemo';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <UserProvider>
+            <FamilyProvider>
+              <MemoryProvider>
+                <Routes>
+            {/* Public routes - accessible to everyone */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/demo" element={<ComponentDemo />} />
+            
+            {/* Auth routes - redirect to dashboard if already authenticated */}
+            <Route 
+              path="/signup" 
+              element={
+                <PublicRoute>
+                  <SignUpPage />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/signin" 
+              element={
+                <PublicRoute>
+                  <SignInPage />
+                </PublicRoute>
+              } 
+            />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            
+            {/* Protected routes - require authentication */}
+            <Route 
+              path="/profile-setup" 
+              element={
+                <ProtectedRoute>
+                  <ProfileSetupPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/onboarding-success" 
+              element={
+                <ProtectedRoute>
+                  <OnboardingSuccessPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/add-family-member" 
+              element={
+                <ProtectedRoute>
+                  <AddFamilyMemberPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/upload-photos" 
+              element={
+                <ProtectedRoute>
+                  <UploadPhotosPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/join-tree" 
+              element={
+                <ProtectedRoute>
+                  <JoinFamilyTreePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/family-tree" 
+              element={
+                <ProtectedRoute>
+                  <FamilyTreePage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Catch all - redirect to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </MemoryProvider>
+            </FamilyProvider>
+        </UserProvider>
+      </AuthProvider>
+    </Router>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;
