@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as fc from 'fast-check';
 import TagSearch from './TagSearch';
@@ -12,6 +12,10 @@ const createMockMember = (id, firstName, lastName) => ({
 });
 
 describe('TagSearch Property Tests', () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllTimers();
+  });
   // **Feature: quick-actions, Property 9: Family member search returns matching results**
   // **Validates: Requirements 8.5**
   it('should display matching results when provided', () => {
@@ -66,9 +70,6 @@ describe('TagSearch Property Tests', () => {
               expect(resultElements.length).toBeLessThanOrEqual(matchingMembers.length);
             }
           }
-
-          // Cleanup
-          container.remove();
         }
       ),
       { numRuns: 100 }
@@ -108,9 +109,6 @@ describe('TagSearch Property Tests', () => {
             expect(tagElement.textContent).toContain(tag.firstName);
             expect(tagElement.textContent).toContain(tag.lastName);
           });
-
-          // Cleanup
-          container.remove();
         }
       ),
       { numRuns: 100 }
@@ -155,9 +153,6 @@ describe('TagSearch Property Tests', () => {
             // Verify the correct tag was removed
             expect(removedId).toBe(tags[validIndex].id);
           }
-
-          // Cleanup
-          container.remove();
         }
       ),
       { numRuns: 50 }
@@ -205,9 +200,6 @@ describe('TagSearch Property Tests', () => {
               expect(resultTexts).not.toContain(selectedTagText);
             }
           }, { timeout: 500 });
-
-          // Cleanup
-          container.remove();
         }
       ),
       { numRuns: 50 }

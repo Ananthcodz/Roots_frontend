@@ -49,8 +49,7 @@ const NavigationBar = () => {
       <div className="nav-container">
         {/* Logo */}
         <div className="nav-logo" onClick={() => navigate('/dashboard')}>
-          <RootsLogo width={32} height={32} />
-          <span className="nav-logo-text">Roots</span>
+          <RootsLogo width={100} height={100} />
         </div>
 
         {/* Desktop Navigation Links */}

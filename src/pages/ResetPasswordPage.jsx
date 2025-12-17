@@ -96,7 +96,7 @@ const ResetPasswordPage = () => {
         <div className="reset-password-container">
           <div className="reset-password-card">
             <div className="reset-password-header">
-              <RootsLogo width={48} height={48} />
+              <RootsLogo width={80} height={80} />
               <h1>Link expired</h1>
               <p>
                 This password reset link has expired or is invalid. 
@@ -138,7 +138,7 @@ const ResetPasswordPage = () => {
       <div className="reset-password-container">
         <div className="reset-password-card">
           <div className="reset-password-header">
-            <RootsLogo width={48} height={48} />
+            <RootsLogo width={80} height={80} />
             <h1>Create new password</h1>
             <p>
               Your new password must be different from previously used passwords 

@@ -23,6 +23,11 @@
   outline-offset: 2px;
 }
 
+.member-card:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(13, 115, 119, 0.1);
+}
+
 /* Root state */
 .member-card-root {
   border-color: #0d7377;
@@ -45,15 +50,28 @@
 .member-card-highlighted {
   border-color: #f59e0b;
   background: #fffbeb;
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: highlightPulse 2s ease-in-out infinite, highlightFadeIn 0.4s ease-in-out;
 }
 
-@keyframes pulse {
+@keyframes highlightPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transform: translateY(-2px) scale(1);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    transform: translateY(-3px) scale(1.02);
+  }
+}
+
+@keyframes highlightFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -61,10 +79,12 @@
 .member-card-dimmed {
   opacity: 0.4;
   filter: grayscale(50%);
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .member-card-dimmed:hover {
   opacity: 0.6;
+  filter: grayscale(30%);
 }
 
 /* Photo container */

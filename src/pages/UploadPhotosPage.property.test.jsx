@@ -145,7 +145,12 @@ describe('UploadPhotosPage - Photo Upload Property Tests', () => {
           const memoryData = {
             albumId,
             location,
-            dateTaken: dateTaken ? dateTaken.toISOString().split('T')[0] : null,
+            dateTaken: dateTaken ? (() => {
+              const year = dateTaken.getFullYear();
+              const month = String(dateTaken.getMonth() + 1).padStart(2, '0');
+              const day = String(dateTaken.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
+            })() : null,
             description,
             taggedPeople,
           };

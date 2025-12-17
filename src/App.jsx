@@ -20,6 +20,7 @@ import JoinFamilyTreePage from './pages/JoinFamilyTreePage';
 import FamilyTreePage from './pages/FamilyTreePage';
 import ComponentDemo from './pages/ComponentDemo';
 import './App.css';
+import Login from './components/login';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             {/* Public routes - accessible to everyone */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/demo" element={<ComponentDemo />} />
+            
             
             {/* Auth routes - redirect to dashboard if already authenticated */}
             <Route 

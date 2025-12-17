@@ -10,6 +10,18 @@
   top: 80px;
   right: 24px;
   z-index: 100;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .zoom-btn {
@@ -57,6 +69,20 @@
   color: #334155;
   padding: 0 8px;
   user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.zoom-display.zoom-changed {
+  animation: zoomPop 0.3s ease;
+}
+
+@keyframes zoomPop {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 /* Responsive adjustments */

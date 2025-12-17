@@ -103,7 +103,7 @@ export const FamilyProvider = ({ children }) => {
     }
   };
 
-  const getFamilyMembers = async () => {
+  const getFamilyMembers = async (forceRefresh = false) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -112,6 +112,7 @@ export const FamilyProvider = ({ children }) => {
         // Mock response for development
         await new Promise(resolve => setTimeout(resolve, 500));
         // Return existing family members from state
+        // In mock mode, the state is already updated by addFamilyMember
         return familyMembers;
       }
 
@@ -126,7 +127,7 @@ export const FamilyProvider = ({ children }) => {
     }
   };
 
-  const getRelationships = async () => {
+  const getRelationships = async (forceRefresh = false) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -135,6 +136,7 @@ export const FamilyProvider = ({ children }) => {
         // Mock response for development
         await new Promise(resolve => setTimeout(resolve, 500));
         // Return existing relationships from state
+        // In mock mode, the state is already updated by addFamilyMember
         return relationships;
       }
 

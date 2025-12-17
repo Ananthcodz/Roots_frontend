@@ -156,31 +156,31 @@
   - **Property 19: Clearing search removes highlighting**
   - **Validates: Requirements 8.5**
 
-- [ ] 7. Implement tree owner sidebar
-  - [ ] 7.1 Create TreeOwnerProfile component
+- [x] 7. Implement tree owner sidebar
+  - [x] 7.1 Create TreeOwnerProfile component
     - Display tree owner's profile photo (circular frame)
     - Display full name and "Tree Owner" label
     - Display birth year in format "Born YYYY"
     - Display "GROW YOUR TREE" heading
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 7.2 Write property test for birth year formatting
+- [x] 7.2 Write property test for birth year formatting
   - **Property 13: Birth year formatting**
   - **Validates: Requirements 6.3**
 
-  - [ ] 7.3 Create action buttons
+  - [x] 7.3 Create action buttons
     - Add Parents button (navigates to add member form)
     - Add Spouse button (navigates to add member form)
     - Add Children button (navigates to add member form)
     - Update button states based on existing relationships
     - _Requirements: 2.1, 3.1, 4.1_
 
-- [ ] 7.4 Write property test for spouse button state
+- [x] 7.4 Write property test for spouse button state
   - **Property 6: Spouse button state updates**
   - **Validates: Requirements 3.5**
 
-- [ ] 8. Implement member detail panel
-  - [ ] 8.1 Create MemberDetailPanel component
+- [x] 8. Implement member detail panel
+  - [x] 8.1 Create MemberDetailPanel component
     - Display when a member is selected
     - Show member's large profile photo
     - Show full name, birth year, and location
@@ -188,63 +188,63 @@
     - Display "Add Relative" button
     - _Requirements: 15.1, 15.2, 15.3, 15.4_
 
-- [ ] 8.2 Write property test for member click
+- [x] 8.2 Write property test for member click
   - **Property 30: Member click shows detail panel**
   - **Validates: Requirements 15.1**
 
-- [ ] 8.3 Write property test for detail panel display
+- [x] 8.3 Write property test for detail panel display
   - **Property 31: Detail panel displays member information**
   - **Validates: Requirements 15.2**
 
-  - [ ] 8.4 Create related members list
+  - [x] 8.4 Create related members list
     - Display each related member with photo, name, relationship label
     - Display initials badge for each member
     - Handle click to select related member
     - _Requirements: 15.5_
 
-- [ ] 8.5 Write property test for related members display
+- [x] 8.5 Write property test for related members display
   - **Property 32: Related members display complete information**
   - **Validates: Requirements 15.5**
 
-- [ ] 9. Implement relationship explorer
-  - [ ] 9.1 Create RelationshipExplorer component
+- [-] 9. Implement relationship explorer
+  - [x] 9.1 Create RelationshipExplorer component
     - Display "Start" field pre-filled with tree owner
     - Display "Target" field with member dropdown
     - Enable "Trace Path" button when target is selected
     - _Requirements: 16.1, 16.2, 16.3_
 
-- [ ] 9.2 Write property test for trace path button
+- [x] 9.2 Write property test for trace path button
   - **Property 33: Trace path button enabled when target selected**
   - **Validates: Requirements 16.3**
 
-  - [ ] 9.3 Implement path calculation algorithm
+  - [x] 9.3 Implement path calculation algorithm
     - Use breadth-first search to find shortest path
     - Build relationship description from path
     - Display path or "not connected" message
     - _Requirements: 16.4, 16.5_
 
-- [ ] 9.4 Write property test for path calculation
+- [x] 9.4 Write property test for path calculation
   - **Property 34: Path calculation between connected members**
   - **Validates: Requirements 16.4**
 
-- [ ] 10. Implement tree statistics
-  - [ ] 10.1 Create TreeStatistics component
+- [x] 10. Implement tree statistics
+  - [x] 10.1 Create TreeStatistics component
     - Calculate total member count
     - Calculate generation count
     - Display with appropriate labels
     - Update when tree changes
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
-- [ ] 10.2 Write property test for statistics update
+- [x] 10.2 Write property test for statistics update
   - **Property 37: Statistics update on tree changes**
   - **Validates: Requirements 17.4**
 
-- [ ] 10.3 Write property test for member count formatting
+- [x] 10.3 Write property test for member count formatting
   - **Property 38: Member count formatting**
   - **Validates: Requirements 17.5**
 
-- [ ] 11. Implement first-time user experience
-  - [ ] 11.1 Create "Start here!" tooltip
+- [x] 11. Implement first-time user experience
+  - [x] 11.1 Create "Start here!" tooltip
     - Display on first visit (check localStorage)
     - Position above tree owner's card
     - Dismiss on click anywhere
@@ -252,79 +252,79 @@
     - Don't show on subsequent visits
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 12. Integrate with add member form
-  - [ ] 12.1 Update AddFamilyMemberPage navigation
+- [-] 12. Integrate with add member form
+  - [x] 12.1 Update AddFamilyMemberPage navigation
     - Accept relationship type and related member from URL params
     - Pre-fill "Related to" dropdown with tree owner
     - Pre-select relationship type if provided
     - Navigate back to family tree after successful add
     - _Requirements: 11.3, 11.4, 11.5_
 
-- [ ] 12.2 Write property test for related to pre-fill
+- [x] 12.2 Write property test for related to pre-fill
   - **Property 23: Related to dropdown pre-fill**
   - **Validates: Requirements 11.3**
 
-- [ ] 12.3 Write property test for specific label field
+- [x] 12.3 Write property test for specific label field
   - **Property 24: Specific label field conditional enabling**
   - **Validates: Requirements 11.5**
 
-  - [ ] 12.3 Update placeholder click handlers
+  - [x] 12.3 Update placeholder click handlers
     - Navigate to add member form with relationship type
     - Pass related member ID in URL params
     - _Requirements: 5.4_
 
-- [ ] 12.4 Write property test for placeholder navigation
+- [x] 12.4 Write property test for placeholder navigation
   - **Property 11: Placeholder click navigates correctly**
   - **Validates: Requirements 5.4**
 
-  - [ ] 12.4 Update tree after member added
+  - [x] 12.4 Update tree after member added
     - Refresh family members and relationships
     - Replace placeholder with new member card
     - Update tree statistics
     - _Requirements: 5.5, 4.5_
 
-- [ ] 12.5 Write property test for placeholder replacement
+- [x] 12.5 Write property test for placeholder replacement
   - **Property 12: Placeholder replacement after adding member**
   - **Validates: Requirements 5.5**
 
-- [ ] 12.6 Write property test for relationship persistence
+- [x] 12.6 Write property test for relationship persistence
   - **Property 9: Child relationship persists**
   - **Validates: Requirements 4.5**
 
-- [ ] 13. Implement form validation enhancements
-  - [ ] 13.1 Add living status toggle validation
+- [x] 13. Implement form validation enhancements
+  - [x] 13.1 Add living status toggle validation
     - Ensure toggle state maps to boolean value
     - _Requirements: 13.2_
 
-- [ ] 13.2 Write property test for living status toggle
+- [x] 13.2 Write property test for living status toggle
   - **Property 25: Living status toggle updates state**
   - **Validates: Requirements 13.2**
 
-  - [ ] 13.2 Enhance form validation
+  - [x] 13.2 Enhance form validation
     - Validate all required fields on submit
     - Validate email format
     - Validate date format (DD/MM/YYYY)
     - Enable submit button only when form is valid
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
 
-- [ ] 13.3 Write property test for missing field validation
+- [x] 13.3 Write property test for missing field validation
   - **Property 26: Form validation identifies missing fields**
   - **Validates: Requirements 14.1**
 
-- [ ] 13.4 Write property test for email validation
+- [x] 13.4 Write property test for email validation
   - **Property 27: Email validation**
   - **Validates: Requirements 14.2**
 
-- [ ] 13.5 Write property test for date validation
+- [x] 13.5 Write property test for date validation
   - **Property 28: Date validation**
   - **Validates: Requirements 14.3**
 
-- [ ] 13.6 Write property test for submit button state
+- [x] 13.6 Write property test for submit button state
   - **Property 29: Submit button enabled when valid**
   - **Validates: Requirements 14.4**
 
-- [ ] 14. Create FamilyTreePage main component
-  - [ ] 14.1 Assemble all components
+- [x] 14. Create FamilyTreePage main component
+  - [x] 14.1 Assemble all components
     - NavigationBar at top
     - TreeToolbar with search and zoom controls
     - TreeSidebar with owner profile or member details
@@ -332,59 +332,59 @@
     - Handle component state and interactions
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-  - [ ] 14.2 Implement data loading
+  - [x] 14.2 Implement data loading
     - Fetch family members on mount
     - Fetch relationships on mount
     - Display loading indicator
     - Handle errors with retry option
     - _Requirements: 7.1_
 
-  - [ ] 14.3 Implement member selection
+  - [x] 14.3 Implement member selection
     - Update selected member in TreeContext
     - Switch sidebar to member detail panel
     - Highlight selected member card
     - _Requirements: 15.1_
 
-- [ ] 15. Checkpoint - Ensure all tests pass
+- [x] 15. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 16. Styling and polish
-  - [ ] 16.1 Apply consistent styling
+- [x] 16. Styling and polish
+  - [x] 16.1 Apply consistent styling
     - Match existing design system colors and fonts
     - Ensure responsive layout for mobile
     - Apply hover states to interactive elements
     - Ensure focus indicators are visible
     - _Requirements: 5.3, 6.4_
 
-  - [ ] 16.2 Optimize performance
+  - [x] 16.2 Optimize performance
     - Implement virtual rendering for large trees
     - Memoize tree layout calculations
     - Debounce pan/zoom updates
     - Lazy load member photos
     - _Requirements: 7.1_
 
-  - [ ] 16.3 Add animations
+  - [x] 16.3 Add animations
     - Smooth zoom transitions
     - Smooth pan transitions
     - Fade in/out for detail panel
     - Highlight animation for search results
     - _Requirements: 8.3_
 
-- [ ] 16.4 Write integration tests
+- [x] 16.4 Write integration tests
   - Test complete user flow: view tree → search → select member → add relative
   - Test zoom and pan interactions
   - Test relationship explorer
   - Test statistics updates
 
-- [ ] 17. Accessibility improvements
-  - [ ] 17.1 Add keyboard navigation
+- [x] 17. Accessibility improvements
+  - [x] 17.1 Add keyboard navigation
     - Tab order: toolbar → sidebar → tree
     - Arrow keys navigate between tree nodes
     - Enter/Space activates buttons and cards
     - Escape closes detail panel
     - _Requirements: All_
 
-  - [ ] 17.2 Add ARIA labels
+  - [x] 17.2 Add ARIA labels
     - Label all interactive elements
     - Announce zoom level changes
     - Announce search results count
@@ -392,12 +392,12 @@
     - Announce error messages
     - _Requirements: All_
 
-  - [ ] 17.3 Ensure visual accessibility
+  - [x] 17.3 Ensure visual accessibility
     - Verify color contrast (WCAG AA)
     - Ensure focus indicators are visible
     - Ensure touch targets are 44x44px minimum
     - Test with screen reader
     - _Requirements: All_
 
-- [ ] 18. Final checkpoint - Ensure all tests pass
+- [-] 18. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.

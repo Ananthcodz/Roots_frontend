@@ -23,11 +23,6 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.nav-logo:hover {
-  opacity: 0.8;
 }
 
 .nav-logo-text {

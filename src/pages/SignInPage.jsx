@@ -83,11 +83,11 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="signin-page">
-      <div className="signin-container">
-        <div className="signin-card">
+    <div className="signin-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
+      <div className="signin-container" style={{ width: '100%', maxWidth: '440px' }}>
+        <div className="signin-card" style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '48px 40px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
           <div className="signin-header">
-            <RootsLogo width={48} height={48} />
+            <RootsLogo width={80} height={80} />
             <h1>Welcome back</h1>
             <p>Enter your credentials to access your family tree and connect with relatives.</p>
           </div>

@@ -90,11 +90,11 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="signup-page">
-      <div className="signup-container">
-        <div className="signup-card">
+    <div className="signup-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
+      <div className="signup-container" style={{ width: '100%', maxWidth: '440px' }}>
+        <div className="signup-card" style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '48px 40px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
           <div className="signup-header">
-            <RootsLogo width={48} height={48} />
+            <RootsLogo width={80} height={80} />
             <h1>Create an account</h1>
             <p>Join your family network to discover, preserve, and share your history.</p>
           </div>

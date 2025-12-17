@@ -2,11 +2,13 @@
 
 .signin-page {
   min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f9fafb;
-  padding: 40px 20px;
+  padding: 20px;
+  overflow: hidden;
 }
 
 .signin-container {
@@ -17,17 +19,17 @@
 .signin-card {
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 48px 40px;
+  padding: 24px 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .signin-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .signin-header svg {
-  margin: 0 auto 20px;
+  margin: 0 auto 12px;
 }
 
 .signin-header h1 {
@@ -47,7 +49,7 @@
 .signin-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .signin-forgot {
@@ -74,7 +76,7 @@
 .signin-divider {
   position: relative;
   text-align: center;
-  margin: 28px 0;
+  margin: 20px 0;
 }
 
 .signin-divider::before {
@@ -103,7 +105,7 @@
 
 .signin-footer {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 16px;
   font-size: 14px;
   color: #6b7280;
 }
@@ -122,7 +124,7 @@
   display: flex;
   justify-content: center;
   gap: 24px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .signin-links a {

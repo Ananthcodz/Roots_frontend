@@ -60,7 +60,7 @@ const ForgotPasswordPage = () => {
         <div className="forgot-password-container">
           <div className="forgot-password-card">
             <div className="forgot-password-header">
-              <RootsLogo width={48} height={48} />
+              <RootsLogo width={80} height={80} />
               <h1>Check your email</h1>
               <p>
                 We've sent a password reset link to <strong>{email}</strong>. 
@@ -101,7 +101,7 @@ const ForgotPasswordPage = () => {
       <div className="forgot-password-container">
         <div className="forgot-password-card">
           <div className="forgot-password-header">
-            <RootsLogo width={48} height={48} />
+            <RootsLogo width={80} height={80} />
             <h1>Forgot your password?</h1>
             <p>
               No worries! Enter your email address and we'll send you a link to reset your password.

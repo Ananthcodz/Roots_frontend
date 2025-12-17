@@ -8,7 +8,7 @@
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 120px;
   max-width: 140px;
   min-height: 140px;
@@ -17,8 +17,8 @@
 .placeholder-card:hover {
   border-color: #0d7377;
   background: #f0fdfa;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(13, 115, 119, 0.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(13, 115, 119, 0.2);
 }
 
 .placeholder-card:focus-visible {

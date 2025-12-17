@@ -1,3 +1,4 @@
+import React from 'react';
 import MemberCard from './MemberCard';
 import PlaceholderCard from './PlaceholderCard';
 import ConnectionLines from './ConnectionLines';
@@ -16,7 +17,8 @@ const TreeNode = ({
   depth = 0,
   maxDepth = 1,
   zoomLevel = 100,
-  searchResults = []
+  searchResults = [],
+  rootCardRef
 }) => {
   if (!node) {
     return null;
@@ -131,6 +133,7 @@ const TreeNode = ({
           {/* Current Member */}
           <div className="tree-node-member">
             <MemberCard
+              ref={isRoot ? rootCardRef : null}
               member={member}
               relationshipLabel={getRelationshipLabel(member, isRoot ? 'root' : 'member')}
               isRoot={isRoot}
@@ -197,4 +200,5 @@ const TreeNode = ({
   );
 };
 
-export default TreeNode;
+// Memoize TreeNode to prevent unnecessary re-renders
+export default React.memo(TreeNode);

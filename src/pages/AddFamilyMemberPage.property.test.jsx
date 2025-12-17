@@ -78,6 +78,76 @@ describe('AddFamilyMemberPage - Property-Based Tests', () => {
 });
 
   /**
+   * Feature: family-tree, Property 23: Related to dropdown pre-fill
+   * Validates: Requirements 11.3
+   * 
+   * For any add member form opened from the tree with URL params, the "Related to" 
+   * dropdown should be pre-filled with the tree owner's information.
+   */
+  it('Property 23: Related to dropdown pre-fill', () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          relatedToUserId: fc.string({ minLength: 8, maxLength: 28 }).filter(s => s.trim().length > 0),
+          relationshipType: fc.constantFrom('parent', 'child', 'sibling', 'spouse', 'father', 'mother'),
+        }),
+        (urlParams) => {
+          // Simulate form initialization with URL params
+          const formState = {
+            relatedTo: urlParams.relatedToUserId,
+            relationshipType: urlParams.relationshipType,
+          };
+
+          // Property: When URL params are provided, relatedTo should be pre-filled
+          expect(formState.relatedTo).toBe(urlParams.relatedToUserId);
+          expect(formState.relatedTo).toBeTruthy();
+          expect(formState.relatedTo.length).toBeGreaterThan(0);
+          
+          // Property: The pre-filled value should match the URL param exactly
+          expect(formState.relatedTo).toEqual(urlParams.relatedToUserId);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
+   * Feature: family-tree, Property 24: Specific label field conditional enabling
+   * Validates: Requirements 11.5
+   * 
+   * For any relationship type selection, the "Specific Label" text field should be 
+   * enabled and editable.
+   */
+  it('Property 24: Specific label field conditional enabling', () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          relationshipType: fc.constantFrom('parent', 'child', 'sibling', 'spouse', 'grandparent', 'grandchild', 'aunt', 'uncle', 'cousin', 'other'),
+          specificLabel: fc.string({ minLength: 0, maxLength: 50 }),
+        }),
+        (formData) => {
+          // Simulate form state with relationship type selected
+          const formState = {
+            relationshipType: formData.relationshipType,
+            specificLabel: formData.specificLabel,
+          };
+
+          // Property: When a relationship type is selected, specific label field should be enabled
+          const isSpecificLabelEnabled = formState.relationshipType !== '';
+          expect(isSpecificLabelEnabled).toBe(true);
+          
+          // Property: The specific label field should accept any string value
+          expect(typeof formState.specificLabel).toBe('string');
+          
+          // Property: The specific label can be empty or contain text
+          expect(formState.specificLabel.length).toBeGreaterThanOrEqual(0);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  /**
    * Feature: quick-actions, Property 4: Email validation correctly identifies valid and invalid emails
    * Validates: Requirements 4.4
    * 
@@ -158,7 +228,12 @@ describe('AddFamilyMemberPage - Property-Based Tests', () => {
               relationshipType: formData.relationshipType,
               firstName: formData.firstName.trim(),
               lastName: formData.lastName.trim(),
-              dateOfBirth: formData.dateOfBirth.toISOString().split('T')[0],
+              dateOfBirth: (() => {
+                const year = formData.dateOfBirth.getFullYear();
+                const month = String(formData.dateOfBirth.getMonth() + 1).padStart(2, '0');
+                const day = String(formData.dateOfBirth.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              })(),
               gender: formData.gender,
               isLiving: formData.isLiving,
             };

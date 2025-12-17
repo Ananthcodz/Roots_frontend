@@ -1,7 +1,7 @@
 import React from 'react';
 import './MemberCard.css';
 
-const MemberCard = ({ 
+const MemberCard = React.forwardRef(({ 
   member, 
   relationshipLabel, 
   isRoot = false, 
@@ -9,7 +9,7 @@ const MemberCard = ({
   isHighlighted = false,
   isDimmed = false,
   onClick 
-}) => {
+}, ref) => {
   const cardClass = [
     'member-card',
     isRoot && 'member-card-root',
@@ -40,6 +40,7 @@ const MemberCard = ({
 
   return (
     <div 
+      ref={ref}
       className={cardClass}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
@@ -53,6 +54,7 @@ const MemberCard = ({
             src={member.photoUrl} 
             alt={`${member.firstName} ${member.lastName}`}
             className="member-card-image"
+            loading="lazy"
           />
         ) : (
           <div className="member-card-placeholder" aria-hidden="true">
@@ -70,6 +72,8 @@ const MemberCard = ({
       </div>
     </div>
   );
-};
+});
+
+MemberCard.displayName = 'MemberCard';
 
 export default MemberCard;

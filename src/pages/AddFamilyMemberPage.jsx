@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useFamily } from '../contexts/FamilyContext';
 import { useUser } from '../contexts/UserContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,14 +15,20 @@ import './AddFamilyMemberPage.css';
 
 const AddFamilyMemberPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { addFamilyMember, isLoading } = useFamily();
   const { profile } = useUser();
   const { user } = useAuth();
 
+  // Get URL params
+  const relationshipTypeParam = searchParams.get('type');
+  const relatedToParam = searchParams.get('relatedTo');
+
   // Form state
   const [formData, setFormData] = useState({
-    relatedTo: user?.uid || '',
-    relationshipType: '',
+    relatedTo: relatedToParam || user?.uid || '',
+    relationshipType: relationshipTypeParam || '',
     specificLabel: '',
     profilePhoto: null,
     photoPreview: null,
@@ -37,6 +43,62 @@ const AddFamilyMemberPage = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Determine where to navigate back to
+  const getBackPath = () => {
+    // If coming from family tree (has type param), go back to family tree
+    if (relationshipTypeParam) {
+      return '/family-tree';
+    }
+    // Otherwise go to dashboard
+    return '/dashboard';
+  };
+
+  // Update form data when URL params change
+  useEffect(() => {
+    if (relationshipTypeParam) {
+      setFormData(prev => ({
+        ...prev,
+        relationshipType: relationshipTypeParam
+      }));
+    }
+    if (relatedToParam) {
+      setFormData(prev => ({
+        ...prev,
+        relatedTo: relatedToParam
+      }));
+    }
+  }, [relationshipTypeParam, relatedToParam]);
+
+  // Check form validity whenever form data changes
+  useEffect(() => {
+    const checkFormValidity = () => {
+      // Check required fields
+      if (!formData.relationshipType) return false;
+      if (!formData.firstName.trim()) return false;
+      if (!formData.lastName.trim()) return false;
+      if (!formData.dateOfBirth) return false;
+      if (!formData.gender) return false;
+
+      // Check email format if provided
+      if (formData.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) return false;
+      }
+
+      // Check date format
+      if (formData.dateOfBirth) {
+        const cleaned = formData.dateOfBirth.replace(/\s/g, '');
+        const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+        if (!dateRegex.test(cleaned)) return false;
+      }
+
+      return true;
+    };
+
+    setIsFormValid(checkFormValidity());
+  }, [formData]);
 
   // Relationship type options
   const relationshipOptions = [
@@ -150,7 +212,7 @@ const AddFamilyMemberPage = () => {
       };
 
       await addFamilyMember(memberData);
-      navigate('/dashboard');
+      navigate(getBackPath());
     } catch (error) {
       console.error('Failed to add family member:', error);
       
@@ -173,7 +235,7 @@ const AddFamilyMemberPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/dashboard');
+    navigate(getBackPath());
   };
 
   return (
@@ -181,7 +243,10 @@ const AddFamilyMemberPage = () => {
       <NavigationBar />
       
       <div className="page-container" role="main" aria-label="Add family member form">
-        <BackLink to="/dashboard" label="Back to Dashboard" />
+        <BackLink 
+          to={getBackPath()} 
+          label={relationshipTypeParam ? "Back to Family Tree" : "Back to Dashboard"} 
+        />
         
         <div className="page-header">
           <h1>Add Family Member</h1>
@@ -440,7 +505,7 @@ const AddFamilyMemberPage = () => {
             <Button
               type="submit"
               variant="primary"
-              disabled={isSubmitting || isLoading}
+              disabled={!isFormValid || isSubmitting || isLoading}
               aria-label={isSubmitting ? 'Adding family member, please wait' : 'Add family member'}
             >
               {isSubmitting ? 'Adding Member...' : 'Add Member'}

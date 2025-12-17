@@ -2,11 +2,13 @@
 
 .profile-setup-page {
   min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f9fafb;
-  padding: 40px 20px;
+  padding: 20px;
+  overflow: hidden;
 }
 
 .profile-setup-container {
@@ -17,74 +19,74 @@
 .profile-setup-card {
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 48px 40px;
+  padding: 24px 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .profile-setup-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .profile-setup-header svg {
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
 }
 
 .profile-setup-header .step-indicator {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .profile-setup-header h1 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #1f2937;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
 }
 
 .profile-setup-header p {
-  font-size: 15px;
+  font-size: 14px;
   color: #6b7280;
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
 }
 
 .profile-setup-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .profile-setup-photo-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .profile-setup-photo-hint {
-  font-size: 13px;
+  font-size: 12px;
   color: #6b7280;
-  margin-top: 12px;
+  margin-top: 8px;
   margin-bottom: 0;
 }
 
 .profile-setup-name-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .profile-setup-submit-btn {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .profile-setup-skip {
   display: block;
   width: 100%;
   text-align: center;
-  margin-top: 16px;
-  padding: 12px;
+  margin-top: 12px;
+  padding: 8px;
   background: none;
   border: none;
   color: #6b7280;

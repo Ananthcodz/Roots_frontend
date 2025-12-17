@@ -141,7 +141,7 @@ const ProfileSetupPage = () => {
       <div className="profile-setup-container">
         <div className="profile-setup-card">
           <div className="profile-setup-header">
-            <RootsLogo width={48} height={48} />
+            <RootsLogo width={80} height={80} />
             <StepIndicator currentStep={1} totalSteps={3} />
             <h1>Complete your profile</h1>
             <p>Help us personalize your experience by sharing a bit about yourself.</p>
