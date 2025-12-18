@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFamily } from '../contexts/FamilyContext';
 import { useUser } from '../contexts/UserContext';
@@ -10,10 +10,15 @@ import SearchInput from '../components/SearchInput';
 import TreeOwnerProfile from '../components/TreeOwnerProfile';
 import MemberDetailPanel from '../components/MemberDetailPanel';
 import FirstTimeTooltip from '../components/FirstTimeTooltip';
+import AddRelativeModal from '../components/AddRelativeModal';
 import './FamilyTreePage.css';
 
 function FamilyTreePageContent() {
-  const { familyMembers, relationships, getFamilyMembers, getRelationships, isLoading, error } = useFamily();
+  const { familyMembers, relationships, getFamilyMembers, getRelationships, addFamilyMember, error } = useFamily();
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [showAddRelativeModal, setShowAddRelativeModal] = useState(false);
+  const [addRelativeType, setAddRelativeType] = useState(null);
+  const [addRelativeRelatedTo, setAddRelativeRelatedTo] = useState(null);
   const { user } = useUser();
   const { 
     handleMemberClick, 
@@ -41,6 +46,8 @@ function FamilyTreePageContent() {
         await getRelationships();
       } catch (err) {
         console.error('Failed to load family tree data:', err);
+      } finally {
+        setInitialLoadComplete(true);
       }
     };
 
@@ -62,7 +69,7 @@ function FamilyTreePageContent() {
 
   // Check for first-time visit after data loads
   useEffect(() => {
-    if (!isLoading && familyMembers.length > 0) {
+    if (initialLoadComplete) {
       // Check if this is first visit (no family members added yet, only tree owner)
       const hasAddedMembers = familyMembers.length > 1 || relationships.length > 0;
       
@@ -70,7 +77,7 @@ function FamilyTreePageContent() {
         checkFirstTimeVisit();
       }
     }
-  }, [isLoading, familyMembers, relationships, checkFirstTimeVisit]);
+  }, [initialLoadComplete, familyMembers, relationships, checkFirstTimeVisit]);
 
   // Dismiss tooltip when first member is added
   useEffect(() => {
@@ -93,21 +100,48 @@ function FamilyTreePageContent() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedMemberId, setSelectedMemberId]);
 
+  const openAddRelativeModal = (type, relatedTo) => {
+    setAddRelativeType(type);
+    setAddRelativeRelatedTo(relatedTo);
+    setShowAddRelativeModal(true);
+  };
+
   const handlePlaceholderClick = (type, relatedTo) => {
-    // Navigate to add member form with relationship type and related member
-    navigate(`/add-family-member?type=${type}&relatedTo=${relatedTo}`);
+    openAddRelativeModal(type, relatedTo);
   };
 
   const handleAddParents = () => {
-    navigate(`/add-family-member?type=parent&relatedTo=${user?.id}`);
+    openAddRelativeModal('parent', user?.id);
   };
 
   const handleAddSpouse = () => {
-    navigate(`/add-family-member?type=spouse&relatedTo=${user?.id}`);
+    openAddRelativeModal('spouse', user?.id);
   };
 
   const handleAddChildren = () => {
-    navigate(`/add-family-member?type=child&relatedTo=${user?.id}`);
+    openAddRelativeModal('child', user?.id);
+  };
+
+  const handleCloseAddRelativeModal = () => {
+    setShowAddRelativeModal(false);
+    setAddRelativeType(null);
+    setAddRelativeRelatedTo(null);
+  };
+
+  const handleAddRelativeSubmit = async (formData) => {
+    try {
+      await addFamilyMember({
+        ...formData,
+        relatedTo: addRelativeRelatedTo,
+        relationshipType: addRelativeType,
+      });
+      handleCloseAddRelativeModal();
+      // Refresh the family data
+      await getFamilyMembers(true);
+      await getRelationships(true);
+    } catch (err) {
+      console.error('Failed to add family member:', err);
+    }
   };
 
   const handleProfileClick = () => {
@@ -121,8 +155,8 @@ function FamilyTreePageContent() {
   };
 
   const handleAddRelativeClick = () => {
-    // Navigate to add member form with selected member as related to
-    navigate(`/add-family-member?relatedTo=${selectedMemberId}`);
+    // Open modal to add relative to selected member
+    openAddRelativeModal(null, selectedMemberId);
   };
 
   const handleRelatedMemberClick = (memberId) => {
@@ -152,7 +186,7 @@ function FamilyTreePageContent() {
     photoUrl: user?.photoUrl || null,
   };
 
-  if (isLoading) {
+  if (!initialLoadComplete) {
     return (
       <div className="family-tree-page">
         <NavigationBar />
@@ -184,22 +218,16 @@ function FamilyTreePageContent() {
   return (
     <div className="family-tree-page">
       <NavigationBar />
-      <div className="tree-toolbar" ref={toolbarRef}>
-        <div className="tree-toolbar-header">
-          <div className="tree-toolbar-title">
-            <h1>Family Tree</h1>
-            <p>Welcome, {user?.firstName || 'User'}</p>
-          </div>
-          <SearchInput
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder="Search tree..."
-            debounceMs={300}
-            resultsCount={searchQuery ? searchResults.length : null}
-          />
-        </div>
+      <div className="tree-controls-bar">
+        <SearchInput
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search tree..."
+          debounceMs={300}
+          resultsCount={searchQuery ? searchResults.length : null}
+        />
+        <ZoomControls />
       </div>
-      <ZoomControls />
       <div className="tree-main-content">
         <aside className="tree-sidebar" ref={sidebarRef}>
           {!selectedMemberId ? (
@@ -240,6 +268,16 @@ function FamilyTreePageContent() {
           />
         </div>
       </div>
+      
+      {showAddRelativeModal && (
+        <AddRelativeModal
+          isOpen={showAddRelativeModal}
+          onClose={handleCloseAddRelativeModal}
+          onSubmit={handleAddRelativeSubmit}
+          relationshipType={addRelativeType}
+          relatedToMember={familyMembers.find(m => m.id === addRelativeRelatedTo) || treeOwner}
+        />
+      )}
     </div>
   );
 }

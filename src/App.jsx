@@ -18,6 +18,7 @@ import AddFamilyMemberPage from './pages/AddFamilyMemberPage';
 import UploadPhotosPage from './pages/UploadPhotosPage';
 import JoinFamilyTreePage from './pages/JoinFamilyTreePage';
 import FamilyTreePage from './pages/FamilyTreePage';
+import EventsPage from './pages/EventsPage';
 import ComponentDemo from './pages/ComponentDemo';
 import './App.css';
 import Login from './components/login';
@@ -110,6 +111,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <FamilyTreePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/events" 
+              element={
+                <ProtectedRoute>
+                  <EventsPage />
                 </ProtectedRoute>
               } 
             />

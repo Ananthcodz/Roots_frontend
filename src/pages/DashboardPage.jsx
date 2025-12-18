@@ -1,22 +1,25 @@
+import { useState } from 'react';
 import { DashboardProvider } from '../contexts/DashboardContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
 import NavigationBar from '../components/NavigationBar';
-import Greeting from '../components/Greeting';
 import RecentUpdates from '../components/RecentUpdates';
 import QuickActions from '../components/QuickActions';
 import UpcomingEvents from '../components/UpcomingEvents';
-import MemorySpotlight from '../components/MemorySpotlight';
 import OnlineNow from '../components/OnlineNow';
-import TreeOverview from '../components/TreeOverview';
+import AddRelativeModal from '../components/AddRelativeModal';
 import './DashboardPage.css';
 
 const DashboardContent = () => {
   const { user } = useAuth();
   const { profile } = useUser();
+  const [isAddRelativeModalOpen, setIsAddRelativeModalOpen] = useState(false);
   
   // Get user's first name from profile or auth user
   const firstName = profile?.firstName || user?.fullName?.split(' ')[0] || 'User';
+  const fullName = profile?.firstName && profile?.lastName 
+    ? `${profile?.firstName} ${profile?.lastName}` 
+    : user?.fullName || 'User';
 
   // Mock data for Recent Updates
   const mockUpdates = [
@@ -57,8 +60,6 @@ const DashboardContent = () => {
     console.log('View all updates');
   };
 
-  // Removed handleActionClick - let QuickActions handle navigation directly
-
   // Mock data for Upcoming Events
   const mockEvents = [
     {
@@ -83,16 +84,6 @@ const DashboardContent = () => {
       isToday: false,
     },
   ];
-
-  // Mock data for Memory Spotlight
-  const mockMemory = {
-    id: '1',
-    title: 'Autumn Picnic',
-    date: new Date(2023, 9, 24).toISOString(),
-    photoUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800',
-    uploaderName: 'Javier',
-    isFavorite: false,
-  };
 
   // Mock data for Online Users
   const mockOnlineUsers = [
@@ -126,21 +117,8 @@ const DashboardContent = () => {
     console.log('Event clicked:', eventId);
   };
 
-  const handleFavoriteToggle = (memoryId) => {
-    console.log('Favorite toggled:', memoryId);
-  };
-
-  const handleMemoryClick = (memoryId) => {
-    console.log('Memory clicked:', memoryId);
-  };
-
   const handleUserClick = (userId) => {
     console.log('User clicked:', userId);
-  };
-
-  const handleTreeClick = (section) => {
-    console.log('Tree section clicked:', section);
-    // TODO: Navigate to family tree page
   };
 
   return (
@@ -149,48 +127,54 @@ const DashboardContent = () => {
       <main className="dashboard-main">
         <div className="dashboard-container">
           {/* Header Section with Greeting */}
-          <Greeting firstName={firstName} />
+          <div className="dashboard-header">
+            <h1 className="dashboard-greeting">Good Morning, {firstName}</h1>
+            <p className="dashboard-date">
+              {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} • You have 3 new updates
+            </p>
+          </div>
 
-            {/* Main Content Grid */}
-            <div className="dashboard-grid">
-              {/* Left Column - Recent Updates, Calendar & Memory */}
-              <div className="dashboard-main-content">
-                <RecentUpdates updates={mockUpdates} onViewAll={handleViewAll} />
-                
-                <div className="dashboard-secondary-row">
-                  <UpcomingEvents
-                    events={mockEvents}
-                    onCalendarClick={handleCalendarClick}
-                    onEventClick={handleEventClick}
-                  />
+          {/* Quick Actions Row */}
+          <div className="dashboard-quick-actions-row">
+            <QuickActions onActionClick={(actionId) => {
+              if (actionId === 'add-relative') {
+                setIsAddRelativeModalOpen(true);
+                return false; // Prevent navigation
+              }
+            }} />
+          </div>
 
-                  <MemorySpotlight
-                    memory={mockMemory}
-                    onFavoriteToggle={handleFavoriteToggle}
-                    onMemoryClick={handleMemoryClick}
-                  />
-                </div>
-              </div>
+          {/* Add Relative Modal */}
+          <AddRelativeModal 
+            isOpen={isAddRelativeModalOpen} 
+            onClose={() => setIsAddRelativeModalOpen(false)}
+            userName={fullName}
+          />
 
-              {/* Right Sidebar - Quick Actions, Tree Overview, Online Now */}
-              <div className="dashboard-sidebar">
-                <QuickActions />
-                
-                <TreeOverview
-                  memberCount={142}
-                  generationCount={4}
-                  onTreeClick={handleTreeClick}
-                />
-                
-                <OnlineNow
-                  onlineUsers={mockOnlineUsers}
-                  onUserClick={handleUserClick}
-                />
-              </div>
+          {/* Main Content Grid */}
+          <div className="dashboard-grid">
+            {/* Left Column - Latest Activity */}
+            <div className="dashboard-main-content">
+              <RecentUpdates updates={mockUpdates} onViewAll={handleViewAll} />
+            </div>
+
+            {/* Right Column - Up Next & Online Now */}
+            <div className="dashboard-sidebar">
+              <UpcomingEvents
+                events={mockEvents}
+                onCalendarClick={handleCalendarClick}
+                onEventClick={handleEventClick}
+              />
+              
+              <OnlineNow
+                onlineUsers={mockOnlineUsers}
+                onUserClick={handleUserClick}
+              />
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
+    </div>
   );
 };
 

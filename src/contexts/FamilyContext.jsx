@@ -19,6 +19,10 @@ export const FamilyProvider = ({ children }) => {
 
   // Mock mode for development (when no backend is available)
   const MOCK_MODE = import.meta.env.VITE_MOCK_API === 'true';
+  
+  // Debug logging
+  console.log('FamilyContext - VITE_MOCK_API:', import.meta.env.VITE_MOCK_API);
+  console.log('FamilyContext - MOCK_MODE:', MOCK_MODE);
 
   const addFamilyMember = async (memberData) => {
     try {
@@ -104,48 +108,88 @@ export const FamilyProvider = ({ children }) => {
   };
 
   const getFamilyMembers = async (forceRefresh = false) => {
-    try {
+    // Don't set loading if we're in mock mode and already have data
+    if (!MOCK_MODE || forceRefresh || familyMembers.length === 0) {
       setIsLoading(true);
-      setError(null);
+    }
+    setError(null);
 
+    try {
       if (MOCK_MODE) {
         // Mock response for development
-        await new Promise(resolve => setTimeout(resolve, 500));
-        // Return existing family members from state
-        // In mock mode, the state is already updated by addFamilyMember
-        return familyMembers;
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // If we already have members in state and not forcing refresh, return them
+        if (familyMembers.length > 0 && !forceRefresh) {
+          return familyMembers;
+        }
+        
+        // Otherwise return empty array (tree owner will be shown)
+        setFamilyMembers([]);
+        return [];
       }
 
-      const members = await FamilyService.getFamilyMembers();
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
+      );
+      
+      const members = await Promise.race([
+        FamilyService.getFamilyMembers(),
+        timeoutPromise
+      ]);
+      
       setFamilyMembers(members);
       return members;
     } catch (err) {
-      setError(err.message || 'Failed to fetch family members');
-      throw err;
+      console.error('Error fetching family members:', err);
+      // Don't set error for empty results, just return empty array
+      setFamilyMembers([]);
+      return [];
     } finally {
       setIsLoading(false);
     }
   };
 
   const getRelationships = async (forceRefresh = false) => {
-    try {
+    // Don't set loading if we're in mock mode and already have data
+    if (!MOCK_MODE || forceRefresh || relationships.length === 0) {
       setIsLoading(true);
-      setError(null);
+    }
+    setError(null);
 
+    try {
       if (MOCK_MODE) {
         // Mock response for development
-        await new Promise(resolve => setTimeout(resolve, 500));
-        // Return existing relationships from state
-        // In mock mode, the state is already updated by addFamilyMember
-        return relationships;
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // If we already have relationships in state and not forcing refresh, return them
+        if (relationships.length > 0 && !forceRefresh) {
+          return relationships;
+        }
+        
+        // Otherwise return empty array (new tree with no relationships yet)
+        setRelationships([]);
+        return [];
       }
 
-      const rels = await FamilyService.getRelationships();
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
+      );
+      
+      const rels = await Promise.race([
+        FamilyService.getRelationships(),
+        timeoutPromise
+      ]);
+      
       setRelationships(rels);
       return rels;
     } catch (err) {
-      setError(err.message || 'Failed to fetch relationships');
-      throw err;
+      console.error('Error fetching relationships:', err);
+      // Don't set error for empty results, just return empty array
+      setRelationships([]);
+      return [];
     } finally {
       setIsLoading(false);
     }

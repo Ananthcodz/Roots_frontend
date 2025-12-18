@@ -1,43 +1,59 @@
 .dashboard-page {
   min-height: 100vh;
-  background-color: #f6faf9;
+  background-color: #f9fafb;
+  overflow-x: hidden;
 }
 
 .dashboard-main {
-  padding: 2rem 0;
+  padding: 1.5rem 0 2rem;
 }
 
 .dashboard-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
+}
+
+/* Header Section */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-greeting {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-date {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Quick Actions Row */
+.dashboard-quick-actions-row {
+  margin-bottom: 2rem;
 }
 
 /* Main Grid Layout */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
   align-items: start;
 }
 
-/* Main Content - Recent Updates + Calendar & Memory */
+/* Main Content - Latest Activity */
 .dashboard-main-content {
   grid-column: 1;
   grid-row: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
 }
 
-/* Secondary Row - Calendar & Memory under Recent Updates */
-.dashboard-secondary-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-/* Sidebar - Quick Actions, Tree, Online */
+/* Sidebar - Up Next & Online Now */
 .dashboard-sidebar {
   grid-column: 2;
   grid-row: 1;
