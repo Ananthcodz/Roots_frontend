@@ -180,11 +180,17 @@ function FamilyTreePageContent() {
   // Find the tree owner (current user) as a family member
   const treeOwner = familyMembers.find(member => member.userId === user?.id) || {
     id: user?.id || 'unknown',
+    userId: user?.id || 'unknown',
     firstName: user?.firstName || 'User',
     lastName: user?.lastName || '',
     dateOfBirth: user?.dateOfBirth || null,
     photoUrl: user?.photoUrl || null,
   };
+
+  // Ensure tree owner is always in the members list for the canvas
+  const membersWithOwner = familyMembers.some(m => m.id === treeOwner.id || m.userId === user?.id)
+    ? familyMembers
+    : [treeOwner, ...familyMembers];
 
   if (!initialLoadComplete) {
     return (
@@ -254,9 +260,9 @@ function FamilyTreePageContent() {
         </aside>
         <div className="tree-content" ref={treeContentRef}>
           <TreeCanvas
-            members={familyMembers}
+            members={membersWithOwner}
             relationships={relationships}
-            rootMemberId={user?.id}
+            rootMemberId={treeOwner.id}
             onMemberClick={handleMemberClick}
             onPlaceholderClick={handlePlaceholderClick}
             rootCardRef={rootCardRef}

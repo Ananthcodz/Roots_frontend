@@ -272,7 +272,7 @@ const TreeCanvas = ({
       <div 
         className="tree-canvas-content"
         style={{
-          transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel / 100})`,
+          transform: `translate(calc(-50% + ${panOffset.x}px), calc(-50% + ${panOffset.y}px)) scale(${zoomLevel / 100})`,
           transformOrigin: 'center center'
         }}
       >
