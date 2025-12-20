@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfile, uploadProfilePhoto, selectProfileLoading, selectProfileError } from '../redux/slices/userSlice';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
@@ -12,7 +13,8 @@ import './ProfileSetupPage.css';
 
 const ProfileSetupPage = () => {
   const navigate = useNavigate();
-  const { updateProfile, uploadProfilePhoto } = useUser();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectProfileLoading);
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -24,7 +26,6 @@ const ProfileSetupPage = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const genderOptions = [
     { value: 'male', label: 'Male' },
@@ -104,31 +105,28 @@ const ProfileSetupPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
       // Upload photo first if provided
       let photoUrl = null;
       if (profileData.photo) {
-        photoUrl = await uploadProfilePhoto(profileData.photo);
+        const result = await dispatch(uploadProfilePhoto({ file: profileData.photo })).unwrap();
+        photoUrl = result.photoUrl;
       }
       
       // Update profile with all data
-      await updateProfile({
+      await dispatch(updateProfile({
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         dateOfBirth: profileData.dateOfBirth,
         gender: profileData.gender,
         placeOfBirth: profileData.placeOfBirth,
         photoUrl
-      });
+      })).unwrap();
       
       // Navigate to success screen
       navigate('/onboarding-success');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to save profile. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setGeneralError(error || 'Failed to save profile. Please try again.');
     }
   };
 
@@ -217,17 +215,17 @@ const ProfileSetupPage = () => {
               type="submit" 
               variant="primary" 
               size="large" 
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="profile-setup-submit-btn"
             >
-              {isSubmitting ? 'Saving...' : 'Continue'}
+              {isLoading ? 'Saving...' : 'Continue'}
             </Button>
           </form>
 
           <button 
             className="profile-setup-skip"
             onClick={handleSkip}
-            disabled={isSubmitting}
+            disabled={isLoading}
           >
             I'll do this later
           </button>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { signIn, signInWithGoogle, signInWithApple, selectAuthLoading, selectAuthError } from '../redux/slices/authSlice';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import SSOButton from '../components/SSOButton';
@@ -10,14 +11,15 @@ import './SignInPage.css';
 
 const SignInPage = () => {
   const navigate = useNavigate();
-  const { signIn, signInWithGoogle, signInWithApple } = useAuth();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectAuthLoading);
+  const authError = useSelector(selectAuthError);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -52,33 +54,32 @@ const SignInPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      await signIn(formData.email, formData.password);
+      await dispatch(signIn({ 
+        email: formData.email, 
+        password: formData.password 
+      })).unwrap();
       navigate('/dashboard');
     } catch (error) {
-      setGeneralError(error.message || 'Invalid email or password');
-    } finally {
-      setIsSubmitting(false);
+      setGeneralError(error || 'Invalid email or password');
     }
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      await dispatch(signInWithGoogle()).unwrap();
       navigate('/dashboard');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to sign in with Google');
+      setGeneralError(error || 'Failed to sign in with Google');
     }
   };
 
   const handleAppleSignIn = async () => {
     try {
-      await signInWithApple();
+      await dispatch(signInWithApple()).unwrap();
       navigate('/dashboard');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to sign in with Apple');
+      setGeneralError(error || 'Failed to sign in with Apple');
     }
   };
 
@@ -125,10 +126,10 @@ const SignInPage = () => {
               type="submit" 
               variant="primary" 
               size="large" 
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="signin-submit-btn"
             >
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 

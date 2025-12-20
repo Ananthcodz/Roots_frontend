@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPassword, selectAuthLoading, selectAuthError } from '../redux/slices/authSlice';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import FormError from '../components/FormError';
@@ -9,10 +10,10 @@ import './ForgotPasswordPage.css';
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
-  const { resetPassword } = useAuth();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectAuthLoading);
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
   const validateEmail = () => {
@@ -35,15 +36,11 @@ const ForgotPasswordPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      await resetPassword(email);
+      await dispatch(resetPassword({ email })).unwrap();
       setResetSent(true);
     } catch (err) {
-      setError(err.message || 'Failed to send reset email. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setError(err || 'Failed to send reset email. Please try again.');
     }
   };
 
@@ -125,10 +122,10 @@ const ForgotPasswordPage = () => {
               type="submit" 
               variant="primary" 
               size="large" 
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="forgot-password-submit-btn"
             >
-              {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+              {isLoading ? 'Sending...' : 'Send Reset Link'}
             </Button>
           </form>
 

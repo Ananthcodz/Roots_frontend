@@ -1,8 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFamily } from '../contexts/FamilyContext';
-import { useUser } from '../contexts/UserContext';
-import { TreeProvider, useTree } from '../contexts/TreeContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  getFamilyMembers, 
+  getRelationships, 
+  addFamilyMember,
+  selectFamilyMembers,
+  selectRelationships,
+  selectFamilyLoading,
+  selectFamilyError
+} from '../redux/slices/familySlice';
+import { selectProfile } from '../redux/slices/userSlice';
+import { 
+  setSelectedMember,
+  performSearch,
+  selectSearchQuery,
+  selectSearchResults,
+  selectSelectedMemberId,
+  selectShowTooltip,
+  dismissTooltip,
+  checkFirstTimeVisit
+} from '../redux/slices/treeSlice';
 import NavigationBar from '../components/NavigationBar';
 import TreeCanvas from '../components/TreeCanvas';
 import ZoomControls from '../components/ZoomControls';
@@ -14,27 +32,23 @@ import AddRelativeModal from '../components/AddRelativeModal';
 import './FamilyTreePage.css';
 
 function FamilyTreePageContent() {
-  const { familyMembers, relationships, getFamilyMembers, getRelationships, addFamilyMember, error } = useFamily();
+  const dispatch = useDispatch();
+  const familyMembers = useSelector(selectFamilyMembers);
+  const relationships = useSelector(selectRelationships);
+  const isLoading = useSelector(selectFamilyLoading);
+  const error = useSelector(selectFamilyError);
+  const user = useSelector(selectProfile);
+  const searchQuery = useSelector(selectSearchQuery);
+  const searchResults = useSelector(selectSearchResults);
+  const selectedMemberId = useSelector(selectSelectedMemberId);
+  const showFirstTimeTooltip = useSelector(selectShowTooltip);
+  
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [showAddRelativeModal, setShowAddRelativeModal] = useState(false);
   const [addRelativeType, setAddRelativeType] = useState(null);
   const [addRelativeRelatedTo, setAddRelativeRelatedTo] = useState(null);
-  const { user } = useUser();
-  const { 
-    handleMemberClick, 
-    searchQuery, 
-    handleSearch, 
-    clearSearch, 
-    selectedMemberId,
-    setSelectedMemberId,
-    searchResults,
-    showFirstTimeTooltip,
-    dismissTooltip,
-    checkFirstTimeVisit
-  } = useTree();
   const navigate = useNavigate();
   const rootCardRef = useRef(null);
-  const toolbarRef = useRef(null);
   const sidebarRef = useRef(null);
   const treeContentRef = useRef(null);
 
@@ -42,8 +56,8 @@ function FamilyTreePageContent() {
     // Load family data on mount and when returning to the page
     const loadData = async () => {
       try {
-        await getFamilyMembers();
-        await getRelationships();
+        await dispatch(getFamilyMembers()).unwrap();
+        await dispatch(getRelationships()).unwrap();
       } catch (err) {
         console.error('Failed to load family tree data:', err);
       } finally {
@@ -65,7 +79,7 @@ function FamilyTreePageContent() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [getFamilyMembers, getRelationships]);
+  }, [dispatch]);
 
   // Check for first-time visit after data loads
   useEffect(() => {
@@ -74,17 +88,17 @@ function FamilyTreePageContent() {
       const hasAddedMembers = familyMembers.length > 1 || relationships.length > 0;
       
       if (!hasAddedMembers) {
-        checkFirstTimeVisit();
+        dispatch(checkFirstTimeVisit());
       }
     }
-  }, [initialLoadComplete, familyMembers, relationships, checkFirstTimeVisit]);
+  }, [initialLoadComplete, familyMembers, relationships, dispatch]);
 
   // Dismiss tooltip when first member is added
   useEffect(() => {
     if (showFirstTimeTooltip && (familyMembers.length > 1 || relationships.length > 0)) {
-      dismissTooltip();
+      dispatch(dismissTooltip());
     }
-  }, [familyMembers.length, relationships.length, showFirstTimeTooltip, dismissTooltip]);
+  }, [familyMembers.length, relationships.length, showFirstTimeTooltip, dispatch]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -92,13 +106,13 @@ function FamilyTreePageContent() {
       // Escape key closes detail panel
       if (e.key === 'Escape' && selectedMemberId) {
         e.preventDefault();
-        setSelectedMemberId(null);
+        dispatch(setSelectedMember(null));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedMemberId, setSelectedMemberId]);
+  }, [selectedMemberId, dispatch]);
 
   const openAddRelativeModal = (type, relatedTo) => {
     setAddRelativeType(type);
@@ -130,15 +144,15 @@ function FamilyTreePageContent() {
 
   const handleAddRelativeSubmit = async (formData) => {
     try {
-      await addFamilyMember({
+      await dispatch(addFamilyMember({
         ...formData,
         relatedTo: addRelativeRelatedTo,
         relationshipType: addRelativeType,
-      });
+      })).unwrap();
       handleCloseAddRelativeModal();
       // Refresh the family data
-      await getFamilyMembers(true);
-      await getRelationships(true);
+      await dispatch(getFamilyMembers({ forceRefresh: true })).unwrap();
+      await dispatch(getRelationships({ forceRefresh: true })).unwrap();
     } catch (err) {
       console.error('Failed to add family member:', err);
     }
@@ -161,7 +175,7 @@ function FamilyTreePageContent() {
 
   const handleRelatedMemberClick = (memberId) => {
     // Select the related member
-    handleMemberClick(memberId);
+    dispatch(setSelectedMember(memberId));
   };
 
   const handleTracePath = (startId, targetId) => {
@@ -218,7 +232,11 @@ function FamilyTreePageContent() {
   }
 
   const handleSearchChange = (query) => {
-    handleSearch(query, familyMembers);
+    dispatch(performSearch({ query, members: familyMembers }));
+  };
+
+  const handleMemberClick = (memberId) => {
+    dispatch(setSelectedMember(memberId));
   };
 
   return (
@@ -269,7 +287,7 @@ function FamilyTreePageContent() {
           />
           <FirstTimeTooltip
             show={showFirstTimeTooltip}
-            onDismiss={dismissTooltip}
+            onDismiss={() => dispatch(dismissTooltip())}
             targetRef={rootCardRef}
           />
         </div>
@@ -289,11 +307,7 @@ function FamilyTreePageContent() {
 }
 
 function FamilyTreePage() {
-  return (
-    <TreeProvider>
-      <FamilyTreePageContent />
-    </TreeProvider>
-  );
+  return <FamilyTreePageContent />;
 }
 
 export default FamilyTreePage;

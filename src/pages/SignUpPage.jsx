@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { signUp, signInWithGoogle, signInWithApple, selectAuthLoading, selectAuthError } from '../redux/slices/authSlice';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import SSOButton from '../components/SSOButton';
@@ -10,7 +11,9 @@ import './SignUpPage.css';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-  const { signUp, signInWithGoogle, signInWithApple } = useAuth();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectAuthLoading);
+  const authError = useSelector(selectAuthError);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -18,7 +21,6 @@ const SignUpPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -59,33 +61,33 @@ const SignUpPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      await signUp(formData.email, formData.password, formData.fullName);
+      await dispatch(signUp({ 
+        email: formData.email, 
+        password: formData.password, 
+        fullName: formData.fullName 
+      })).unwrap();
       navigate('/profile-setup');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to create account. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setGeneralError(error || 'Failed to create account. Please try again.');
     }
   };
 
   const handleGoogleSignUp = async () => {
     try {
-      await signInWithGoogle();
+      await dispatch(signInWithGoogle()).unwrap();
       navigate('/profile-setup');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to sign up with Google');
+      setGeneralError(error || 'Failed to sign up with Google');
     }
   };
 
   const handleAppleSignUp = async () => {
     try {
-      await signInWithApple();
+      await dispatch(signInWithApple()).unwrap();
       navigate('/profile-setup');
     } catch (error) {
-      setGeneralError(error.message || 'Failed to sign up with Apple');
+      setGeneralError(error || 'Failed to sign up with Apple');
     }
   };
 
@@ -136,10 +138,10 @@ const SignUpPage = () => {
               type="submit" 
               variant="primary" 
               size="large" 
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="signup-submit-btn"
             >
-              {isSubmitting ? 'Creating account...' : 'Create account'}
+              {isLoading ? 'Creating account...' : 'Create account'}
             </Button>
 
             <p className="signup-terms">

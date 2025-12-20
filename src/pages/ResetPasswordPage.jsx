@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updatePassword, selectAuthLoading, selectAuthError } from '../redux/slices/authSlice';
 import ValidationService from '../services/ValidationService';
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -11,14 +12,14 @@ import './ResetPasswordPage.css';
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { updatePassword } = useAuth();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectAuthLoading);
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [tokenError, setTokenError] = useState(false);
   const token = searchParams.get('token');
 
@@ -71,22 +72,18 @@ const ResetPasswordPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      await updatePassword(token, formData.password);
+      await dispatch(updatePassword({ token, newPassword: formData.password })).unwrap();
       // Navigate to sign-in with success message
       navigate('/signin', { state: { message: 'Password reset successful! Please sign in with your new password.' } });
     } catch (err) {
       // Check if token expired
-      if (err.message && (err.message.includes('expired') || err.message.includes('invalid'))) {
+      if (err && (err.includes('expired') || err.includes('invalid'))) {
         setTokenError(true);
         setGeneralError('This password reset link has expired. Please request a new one.');
       } else {
-        setGeneralError(err.message || 'Failed to reset password. Please try again.');
+        setGeneralError(err || 'Failed to reset password. Please try again.');
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -191,10 +188,10 @@ const ResetPasswordPage = () => {
               type="submit" 
               variant="primary" 
               size="large" 
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="reset-password-submit-btn"
             >
-              {isSubmitting ? 'Resetting...' : 'Reset Password'}
+              {isLoading ? 'Resetting...' : 'Reset Password'}
             </Button>
           </form>
 

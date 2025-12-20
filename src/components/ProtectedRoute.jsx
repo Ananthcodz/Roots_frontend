@@ -1,9 +1,11 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthLoading } from '../redux/slices/authSlice';
 import LoadingSpinner from './LoadingSpinner';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isLoading = useSelector(selectAuthLoading);
   const location = useLocation();
 
   if (isLoading) {
