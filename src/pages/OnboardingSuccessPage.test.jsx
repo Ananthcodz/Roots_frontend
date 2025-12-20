@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import * as fc from 'fast-check';
 import OnboardingSuccessPage from './OnboardingSuccessPage';
-import UserContext from '../contexts/UserContext';
+import userReducer from '../redux/slices/userSlice';
 
 // Mock the useNavigate hook
 vi.mock('react-router-dom', async () => {
@@ -13,6 +15,22 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => vi.fn(),
   };
 });
+
+// Helper function to create a mock store
+const createMockStore = (profile) => {
+  return configureStore({
+    reducer: {
+      user: userReducer,
+    },
+    preloadedState: {
+      user: {
+        profile,
+        isLoading: false,
+        error: null,
+      },
+    },
+  });
+};
 
 describe('OnboardingSuccessPage Property Tests', () => {
   afterEach(() => {
@@ -33,19 +51,14 @@ describe('OnboardingSuccessPage Property Tests', () => {
             photoUrl: null
           };
 
-          const mockUserContext = {
-            profile: mockProfile,
-            isLoading: false,
-            updateProfile: vi.fn(),
-            uploadProfilePhoto: vi.fn()
-          };
+          const store = createMockStore(mockProfile);
 
           const { container } = render(
-            <BrowserRouter>
-              <UserContext.Provider value={mockUserContext}>
+            <Provider store={store}>
+              <BrowserRouter>
                 <OnboardingSuccessPage />
-              </UserContext.Provider>
-            </BrowserRouter>
+              </BrowserRouter>
+            </Provider>
           );
 
           // Verify the success message contains the user's first name
@@ -76,19 +89,14 @@ describe('OnboardingSuccessPage Property Tests', () => {
             photoUrl
           };
 
-          const mockUserContext = {
-            profile: mockProfile,
-            isLoading: false,
-            updateProfile: vi.fn(),
-            uploadProfilePhoto: vi.fn()
-          };
+          const store = createMockStore(mockProfile);
 
           const { container } = render(
-            <BrowserRouter>
-              <UserContext.Provider value={mockUserContext}>
+            <Provider store={store}>
+              <BrowserRouter>
                 <OnboardingSuccessPage />
-              </UserContext.Provider>
-            </BrowserRouter>
+              </BrowserRouter>
+            </Provider>
           );
 
           // Verify profile photo is displayed
@@ -116,19 +124,14 @@ describe('OnboardingSuccessPage Property Tests', () => {
             photoUrl: null
           };
 
-          const mockUserContext = {
-            profile: mockProfile,
-            isLoading: false,
-            updateProfile: vi.fn(),
-            uploadProfilePhoto: vi.fn()
-          };
+          const store = createMockStore(mockProfile);
 
           const { container } = render(
-            <BrowserRouter>
-              <UserContext.Provider value={mockUserContext}>
+            <Provider store={store}>
+              <BrowserRouter>
                 <OnboardingSuccessPage />
-              </UserContext.Provider>
-            </BrowserRouter>
+              </BrowserRouter>
+            </Provider>
           );
 
           // Verify profile photo section is not displayed
@@ -144,19 +147,14 @@ describe('OnboardingSuccessPage Property Tests', () => {
   });
 
   it('should use fallback greeting when profile is null', () => {
-    const mockUserContext = {
-      profile: null,
-      isLoading: false,
-      updateProfile: vi.fn(),
-      uploadProfilePhoto: vi.fn()
-    };
+    const store = createMockStore(null);
 
     const { container } = render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContext}>
+      <Provider store={store}>
+        <BrowserRouter>
           <OnboardingSuccessPage />
-        </UserContext.Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
 
     // Verify fallback greeting is used
@@ -169,23 +167,20 @@ describe('OnboardingSuccessPage Property Tests', () => {
 
 describe('OnboardingSuccessPage Unit Tests', () => {
   it('should render success message correctly', () => {
-    const mockUserContext = {
-      profile: {
-        firstName: 'John',
-        lastName: 'Doe',
-        photoUrl: null
-      },
-      isLoading: false,
-      updateProfile: vi.fn(),
-      uploadProfilePhoto: vi.fn()
+    const mockProfile = {
+      firstName: 'John',
+      lastName: 'Doe',
+      photoUrl: null
     };
 
+    const store = createMockStore(mockProfile);
+
     const { container } = render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContext}>
+      <Provider store={store}>
+        <BrowserRouter>
           <OnboardingSuccessPage />
-        </UserContext.Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
 
     const heading = container.querySelector('h1');
@@ -193,23 +188,20 @@ describe('OnboardingSuccessPage Unit Tests', () => {
   });
 
   it('should render profile photo when provided', () => {
-    const mockUserContext = {
-      profile: {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        photoUrl: 'https://example.com/photo.jpg'
-      },
-      isLoading: false,
-      updateProfile: vi.fn(),
-      uploadProfilePhoto: vi.fn()
+    const mockProfile = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      photoUrl: 'https://example.com/photo.jpg'
     };
 
+    const store = createMockStore(mockProfile);
+
     const { container } = render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContext}>
+      <Provider store={store}>
+        <BrowserRouter>
           <OnboardingSuccessPage />
-        </UserContext.Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
 
     const photo = container.querySelector('.onboarding-success-photo img');
@@ -218,23 +210,20 @@ describe('OnboardingSuccessPage Unit Tests', () => {
   });
 
   it('should render all action options', () => {
-    const mockUserContext = {
-      profile: {
-        firstName: 'Test',
-        lastName: 'User',
-        photoUrl: null
-      },
-      isLoading: false,
-      updateProfile: vi.fn(),
-      uploadProfilePhoto: vi.fn()
+    const mockProfile = {
+      firstName: 'Test',
+      lastName: 'User',
+      photoUrl: null
     };
 
+    const store = createMockStore(mockProfile);
+
     const { container } = render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContext}>
+      <Provider store={store}>
+        <BrowserRouter>
           <OnboardingSuccessPage />
-        </UserContext.Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
 
     // Check for option cards
@@ -248,23 +237,20 @@ describe('OnboardingSuccessPage Unit Tests', () => {
   });
 
   it('should display option titles and descriptions', () => {
-    const mockUserContext = {
-      profile: {
-        firstName: 'Test',
-        lastName: 'User',
-        photoUrl: null
-      },
-      isLoading: false,
-      updateProfile: vi.fn(),
-      uploadProfilePhoto: vi.fn()
+    const mockProfile = {
+      firstName: 'Test',
+      lastName: 'User',
+      photoUrl: null
     };
 
+    const store = createMockStore(mockProfile);
+
     const { container } = render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContext}>
+      <Provider store={store}>
+        <BrowserRouter>
           <OnboardingSuccessPage />
-        </UserContext.Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </Provider>
     );
 
     const optionTitles = container.querySelectorAll('.option-title');

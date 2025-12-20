@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
+import { useSelector } from 'react-redux';
+import { selectProfile } from '../redux/slices/userSlice';
 import './OnboardingSuccessPage.css';
 
 const OnboardingSuccessPage = () => {
   const navigate = useNavigate();
-  const { profile } = useUser();
+  const profile = useSelector(selectProfile);
 
   // Get user's first name from profile, fallback to generic greeting
   const firstName = profile?.firstName || 'there';

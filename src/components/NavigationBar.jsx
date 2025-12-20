@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, signOut as signOutAction } from '../redux/slices/authSlice';
+import { selectProfile } from '../redux/slices/userSlice';
 import RootsLogo from './RootsLogo';
 import './NavigationBar.css';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signOut } = useAuth();
-  const { profile } = useUser();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const profile = useSelector(selectProfile);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -25,7 +27,7 @@ const NavigationBar = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await dispatch(signOutAction()).unwrap();
       navigate('/signin');
     } catch (error) {
       console.error('Sign out failed:', error);

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTree } from '../contexts/TreeContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectZoomLevel, zoomIn, zoomOut } from '../redux/slices/treeSlice';
 import './ZoomControls.css';
 
 const ZoomControls = () => {
-  const { zoomLevel, handleZoomIn, handleZoomOut } = useTree();
+  const dispatch = useDispatch();
+  const zoomLevel = useSelector(selectZoomLevel);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const ZoomControls = () => {
     <div className="zoom-controls" role="toolbar" aria-label="Zoom controls">
       <button
         className="zoom-btn zoom-out"
-        onClick={handleZoomOut}
+        onClick={() => dispatch(zoomOut())}
         disabled={zoomLevel <= 10}
         aria-label="Zoom out"
         title="Zoom out (10%)"
@@ -68,7 +70,7 @@ const ZoomControls = () => {
 
       <button
         className="zoom-btn zoom-in"
-        onClick={handleZoomIn}
+        onClick={() => dispatch(zoomIn())}
         disabled={zoomLevel >= 200}
         aria-label="Zoom in"
         title="Zoom in (10%)"

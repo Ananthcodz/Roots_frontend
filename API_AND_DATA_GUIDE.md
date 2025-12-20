@@ -2,11 +2,12 @@
 
 ## Table of Contents
 1. [Data Models](#data-models)
-2. [API Endpoints](#api-endpoints)
-3. [Services](#services)
-4. [Context API](#context-api)
-5. [Mock Data](#mock-data)
-6. [Error Handling](#error-handling)
+2. [Redux State Structure](#redux-state-structure)
+3. [Redux Slices](#redux-slices)
+4. [API Endpoints](#api-endpoints)
+5. [Services](#services)
+6. [Mock Data](#mock-data)
+7. [Error Handling](#error-handling)
 
 ---
 
@@ -204,6 +205,178 @@
   updatedAt: String              // ISO timestamp
 }
 ```
+
+---
+
+## Redux State Structure
+
+### Complete Redux State Tree
+
+The Redux store contains all global application state organized into slices:
+
+```javascript
+{
+  auth: {
+    user: User | null,
+    isAuthenticated: boolean,
+    isLoading: boolean,
+    error: string | null
+  },
+  user: {
+    profile: Profile | null,
+    isLoading: boolean,
+    error: string | null
+  },
+  family: {
+    familyMembers: FamilyMember[],
+    relationships: Relationship[],
+    isLoading: boolean,
+    error: string | null
+  },
+  memory: {
+    memories: Memory[],
+    albums: Album[],
+    isLoading: boolean,
+    uploadProgress: number,
+    error: string | null
+  },
+  dashboard: {
+    dashboardData: DashboardData | null,
+    isLoading: boolean,
+    error: string | null,
+    sectionLoading: Object,
+    sectionErrors: Object
+  },
+  tree: {
+    selectedMemberId: string | null,
+    searchQuery: string,
+    searchResults: string[],
+    zoomLevel: number,
+    panOffset: { x: number, y: number },
+    showFirstTimeTooltip: boolean
+  }
+}
+```
+
+### Accessing Redux State
+
+**Using Selectors** (recommended):
+```javascript
+import { useSelector } from 'react-redux';
+import { selectFamilyMembers } from '../redux/slices/familySlice';
+
+function MyComponent() {
+  const familyMembers = useSelector(selectFamilyMembers);
+  // Use familyMembers in component
+}
+```
+
+**Direct State Access** (not recommended):
+```javascript
+const familyMembers = useSelector(state => state.family.familyMembers);
+```
+
+---
+
+## Redux Slices
+
+All Redux slices follow a consistent pattern with state, async thunks, sync actions, and selectors.
+
+### Auth Slice
+**File**: `src/redux/slices/authSlice.js`
+
+**Async Thunks**:
+- `signUp({ email, password, fullName })` - Register new user
+- `signIn({ email, password })` - User login
+- `signInWithGoogle()` - Google OAuth login
+- `signInWithApple()` - Apple OAuth login
+- `signOut()` - User logout
+- `resetPassword(email)` - Send password reset email
+- `updatePassword({ token, newPassword })` - Update password
+
+**Selectors**:
+- `selectUser(state)` - Get current user
+- `selectIsAuthenticated(state)` - Get auth status
+- `selectAuthLoading(state)` - Get loading state
+- `selectAuthError(state)` - Get error message
+
+### User Slice
+**File**: `src/redux/slices/userSlice.js`
+
+**Async Thunks**:
+- `updateProfile(profileData)` - Update user profile
+- `uploadProfilePhoto(file)` - Upload profile photo
+
+**Selectors**:
+- `selectProfile(state)` - Get user profile
+- `selectProfileLoading(state)` - Get loading state
+- `selectProfileError(state)` - Get error message
+
+### Family Slice
+**File**: `src/redux/slices/familySlice.js`
+
+**Async Thunks**:
+- `addFamilyMember(memberData)` - Add new family member
+- `updateFamilyMember({ memberId, memberData })` - Update member
+- `getFamilyMembers(forceRefresh)` - Fetch all members
+- `getRelationships(forceRefresh)` - Fetch all relationships
+
+**Selectors**:
+- `selectFamilyMembers(state)` - Get all family members
+- `selectRelationships(state)` - Get all relationships
+- `selectFamilyLoading(state)` - Get loading state
+- `selectFamilyError(state)` - Get error message
+- `selectMemberById(state, memberId)` - Get specific member (memoized)
+
+### Memory Slice
+**File**: `src/redux/slices/memorySlice.js`
+
+**Async Thunks**:
+- `uploadPhotos({ files, memoryData, onProgress })` - Upload photos
+- `createMemory(memoryData)` - Create memory
+- `getAlbums()` - Fetch albums
+
+**Selectors**:
+- `selectMemories(state)` - Get memories
+- `selectAlbums(state)` - Get albums
+- `selectMemoryLoading(state)` - Get loading state
+- `selectUploadProgress(state)` - Get upload progress
+- `selectMemoryError(state)` - Get error message
+
+### Dashboard Slice
+**File**: `src/redux/slices/dashboardSlice.js`
+
+**Async Thunks**:
+- `loadDashboardData()` - Load dashboard data
+- `refreshDashboard()` - Refresh dashboard
+
+**Selectors**:
+- `selectDashboardData(state)` - Get dashboard data
+- `selectDashboardLoading(state)` - Get loading state
+- `selectSectionLoading(state, section)` - Get section loading
+- `selectSectionError(state, section)` - Get section error
+
+### Tree Slice
+**File**: `src/redux/slices/treeSlice.js`
+
+**Sync Actions**:
+- `setSelectedMember(memberId)` - Set selected member
+- `setSearchQuery(query)` - Set search query
+- `performSearch({ query, members })` - Perform search
+- `setZoomLevel(level)` - Set zoom level
+- `zoomIn()` / `zoomOut()` - Zoom controls
+- `setPanOffset({ x, y })` - Set pan offset
+- `resetTreeView()` - Reset view
+- `dismissTooltip()` - Dismiss tooltip
+- `checkFirstTimeVisit()` - Check first visit
+
+**Selectors**:
+- `selectSelectedMemberId(state)` - Get selected member
+- `selectSearchQuery(state)` - Get search query
+- `selectSearchResults(state)` - Get search results
+- `selectZoomLevel(state)` - Get zoom level
+- `selectPanOffset(state)` - Get pan offset
+- `selectShowTooltip(state)` - Get tooltip visibility
 
 ---
 
@@ -586,84 +759,88 @@ const photoUrl = await UserService.uploadProfilePhoto(file);
 
 ---
 
-## Context API
+## Using Redux in Components
 
-### FamilyContext
-**File**: `src/contexts/FamilyContext.jsx`
+### Basic Redux Pattern
 
-**Usage**:
+**Reading State**:
 ```javascript
-import { useFamily } from '../contexts/FamilyContext';
+import { useSelector } from 'react-redux';
+import { selectFamilyMembers } from '../redux/slices/familySlice';
 
 function MyComponent() {
-  const {
-    familyMembers,
-    relationships,
-    isLoading,
-    error,
-    addFamilyMember,
-    updateFamilyMember,
-    getFamilyMembers,
-    getRelationships
-  } = useFamily();
-
-  // Use context values and methods
+  const familyMembers = useSelector(selectFamilyMembers);
+  
+  return (
+    <div>
+      {familyMembers.map(member => (
+        <div key={member.id}>{member.firstName}</div>
+      ))}
+    </div>
+  );
 }
 ```
 
-**State**:
+**Dispatching Actions**:
 ```javascript
-{
-  familyMembers: Array,
-  relationships: Array,
-  isLoading: Boolean,
-  error: String
+import { useDispatch } from 'react-redux';
+import { addFamilyMember } from '../redux/slices/familySlice';
+
+function MyComponent() {
+  const dispatch = useDispatch();
+  
+  const handleAdd = async (memberData) => {
+    try {
+      await dispatch(addFamilyMember(memberData)).unwrap();
+      // Success
+    } catch (error) {
+      // Handle error
+      console.error(error);
+    }
+  };
 }
 ```
 
----
-
-### TreeContext
-**File**: `src/contexts/TreeContext.jsx`
-
-**Usage**:
+**Complete Example**:
 ```javascript
-import { useTree } from '../contexts/TreeContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectFamilyMembers,
+  selectFamilyLoading,
+  selectFamilyError,
+  addFamilyMember,
+  getFamilyMembers
+} from '../redux/slices/familySlice';
 
-function TreeComponent() {
-  const {
-    selectedMemberId,
-    searchQuery,
-    searchResults,
-    zoomLevel,
-    panOffset,
-    handleMemberClick,
-    handleSearch,
-    handleZoomIn,
-    handleZoomOut,
-    handlePan
-  } = useTree();
-}
-```
-
----
-
-### AuthContext
-**File**: `src/contexts/AuthContext.jsx`
-
-**Usage**:
-```javascript
-import { useAuth } from '../contexts/AuthContext';
-
-function AuthComponent() {
-  const {
-    user,
-    isAuthenticated,
-    isLoading,
-    login,
-    signup,
-    logout
-  } = useAuth();
+function FamilyComponent() {
+  const dispatch = useDispatch();
+  const familyMembers = useSelector(selectFamilyMembers);
+  const isLoading = useSelector(selectFamilyLoading);
+  const error = useSelector(selectFamilyError);
+  
+  useEffect(() => {
+    dispatch(getFamilyMembers());
+  }, [dispatch]);
+  
+  const handleAdd = async (memberData) => {
+    try {
+      await dispatch(addFamilyMember(memberData)).unwrap();
+      await dispatch(getFamilyMembers(true)).unwrap();
+    } catch (err) {
+      console.error('Failed to add member:', err);
+    }
+  };
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  
+  return (
+    <div>
+      {familyMembers.map(member => (
+        <div key={member.id}>{member.firstName}</div>
+      ))}
+    </div>
+  );
 }
 ```
 
@@ -680,7 +857,7 @@ VITE_MOCK_API=true
 
 ### Mock Data Structure
 
-When `VITE_MOCK_API=true`, the app returns mock data:
+When `VITE_MOCK_API=true`, Redux thunks return mock data:
 
 ```javascript
 // Mock family members
@@ -707,21 +884,33 @@ const mockRelationships = [];
 
 ### Adding Mock Data
 
-Edit `src/contexts/FamilyContext.jsx`:
+Edit Redux slice files (e.g., `src/redux/slices/familySlice.js`):
 
 ```javascript
-if (MOCK_MODE) {
-  // Mock response for development
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Return mock data
-  const mockMembers = [
-    // Add your mock members here
-  ];
-  
-  setFamilyMembers(mockMembers);
-  return mockMembers;
-}
+const MOCK_MODE = import.meta.env.VITE_MOCK_API === 'true';
+
+export const getFamilyMembers = createAsyncThunk(
+  'family/getFamilyMembers',
+  async (forceRefresh, { rejectWithValue }) => {
+    try {
+      if (MOCK_MODE) {
+        // Mock response for development
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Return mock data
+        const mockMembers = [
+          // Add your mock members here
+        ];
+        
+        return mockMembers;
+      }
+      
+      return await FamilyService.getFamilyMembers();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 ```
 
 ---

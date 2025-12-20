@@ -3,41 +3,57 @@ import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as fc from 'fast-check';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import AddFamilyMemberPage from './AddFamilyMemberPage';
-import { FamilyProvider } from '../contexts/FamilyContext';
-import { UserProvider } from '../contexts/UserContext';
-import { AuthProvider } from '../contexts/AuthContext';
+import authReducer from '../redux/slices/authSlice';
+import userReducer from '../redux/slices/userSlice';
+import familyReducer from '../redux/slices/familySlice';
 
-// Mock contexts with minimal data
-const mockAuthContext = {
-  user: { uid: 'test-user-123' },
-  isAuthenticated: true,
+// Create mock store
+const createMockStore = () => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      user: userReducer,
+      family: familyReducer,
+    },
+    preloadedState: {
+      auth: {
+        user: { id: 'test-user-123', email: 'test@test.com' },
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      },
+      user: {
+        profile: {
+          firstName: 'Test',
+          lastName: 'User',
+          photoUrl: null,
+        },
+        isLoading: false,
+        error: null,
+      },
+      family: {
+        familyMembers: [],
+        relationships: [],
+        isLoading: false,
+        error: null,
+      },
+    },
+  });
 };
 
-const mockUserContext = {
-  profile: {
-    firstName: 'Test',
-    lastName: 'User',
-    photoUrl: null,
-  },
+const TestWrapper = ({ children }) => {
+  const store = createMockStore();
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </Provider>
+  );
 };
-
-const mockFamilyContext = {
-  addFamilyMember: vi.fn(),
-  isLoading: false,
-};
-
-const TestWrapper = ({ children }) => (
-  <BrowserRouter>
-    <AuthProvider value={mockAuthContext}>
-      <UserProvider value={mockUserContext}>
-        <FamilyProvider value={mockFamilyContext}>
-          {children}
-        </FamilyProvider>
-      </UserProvider>
-    </AuthProvider>
-  </BrowserRouter>
-);
 
 beforeEach(() => {
   cleanup();

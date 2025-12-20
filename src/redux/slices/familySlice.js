@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 import FamilyService from '../../services/FamilyService';
 
 // Mock mode for development
@@ -230,9 +230,10 @@ export const selectFamilyLoading = (state) => state.family.isLoading;
 export const selectFamilyError = (state) => state.family.error;
 
 // Memoized selector for getting a member by ID
-export const selectMemberById = (state, memberId) => {
-  return state.family.familyMembers.find(member => member.id === memberId);
-};
+export const selectMemberById = createSelector(
+  [selectFamilyMembers, (state, memberId) => memberId],
+  (members, memberId) => members.find(member => member.id === memberId)
+);
 
 // Export actions and reducer
 export const { clearError } = familySlice.actions;

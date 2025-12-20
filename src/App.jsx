@@ -1,8 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { UserProvider } from './contexts/UserContext';
-import { FamilyProvider } from './contexts/FamilyContext';
-import { MemoryProvider } from './contexts/MemoryContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
@@ -27,11 +23,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <AuthProvider>
-          <UserProvider>
-            <FamilyProvider>
-              <MemoryProvider>
-                <Routes>
+        <Routes>
             {/* Public routes - accessible to everyone */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/demo" element={<ComponentDemo />} />
@@ -125,12 +117,8 @@ function App() {
             
             {/* Catch all - redirect to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MemoryProvider>
-            </FamilyProvider>
-        </UserProvider>
-      </AuthProvider>
-    </Router>
+        </Routes>
+      </Router>
     </ErrorBoundary>
   );
 }

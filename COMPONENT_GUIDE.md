@@ -37,8 +37,25 @@ import DashboardPage from './pages/DashboardPage';
 ```
 
 **State Management**:
-- Uses `DashboardContext` for dashboard data
-- Uses `UserContext` for user information
+- Uses Redux `dashboardSlice` for dashboard data
+- Uses Redux `authSlice` for user information
+
+**Redux Integration**:
+```javascript
+import { useSelector, useDispatch } from 'react-redux';
+import { selectDashboardData, loadDashboardData } from '../redux/slices/dashboardSlice';
+import { selectUser } from '../redux/slices/authSlice';
+
+function DashboardPage() {
+  const dispatch = useDispatch();
+  const dashboardData = useSelector(selectDashboardData);
+  const user = useSelector(selectUser);
+  
+  useEffect(() => {
+    dispatch(loadDashboardData());
+  }, [dispatch]);
+}
+```
 
 ---
 
@@ -73,6 +90,42 @@ const [addRelativeType, setAddRelativeType] = useState(null);
 const [addRelativeRelatedTo, setAddRelativeRelatedTo] = useState(null);
 ```
 
+**Redux Integration**:
+```javascript
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectFamilyMembers, 
+  selectRelationships,
+  selectFamilyLoading,
+  addFamilyMember,
+  getFamilyMembers,
+  getRelationships 
+} from '../redux/slices/familySlice';
+import { selectUser } from '../redux/slices/authSlice';
+import { 
+  selectSelectedMemberId,
+  setSelectedMember 
+} from '../redux/slices/treeSlice';
+
+function FamilyTreePage() {
+  const dispatch = useDispatch();
+  const familyMembers = useSelector(selectFamilyMembers);
+  const relationships = useSelector(selectRelationships);
+  const isLoading = useSelector(selectFamilyLoading);
+  const user = useSelector(selectUser);
+  const selectedMemberId = useSelector(selectSelectedMemberId);
+  
+  useEffect(() => {
+    dispatch(getFamilyMembers());
+    dispatch(getRelationships());
+  }, [dispatch]);
+  
+  const handleMemberClick = (memberId) => {
+    dispatch(setSelectedMember(memberId));
+  };
+}
+```
+
 **Key Methods**:
 ```javascript
 // Open modal for adding relative
@@ -84,14 +137,18 @@ const openAddRelativeModal = (type, relatedTo) => {
 
 // Handle form submission
 const handleAddRelativeSubmit = async (formData) => {
-  await addFamilyMember({
-    ...formData,
-    relatedTo: addRelativeRelatedTo,
-    relationshipType: addRelativeType,
-  });
-  handleCloseAddRelativeModal();
-  await getFamilyMembers(true);
-  await getRelationships(true);
+  try {
+    await dispatch(addFamilyMember({
+      ...formData,
+      relatedTo: addRelativeRelatedTo,
+      relationshipType: addRelativeType,
+    })).unwrap();
+    handleCloseAddRelativeModal();
+    await dispatch(getFamilyMembers(true)).unwrap();
+    await dispatch(getRelationships(true)).unwrap();
+  } catch (err) {
+    console.error('Failed to add family member:', err);
+  }
 };
 ```
 
@@ -153,7 +210,23 @@ const handleAddRelativeSubmit = async (formData) => {
 **Props**:
 ```javascript
 {
-  // No required props - uses UserContext internally
+  // No required props - uses Redux internally
+}
+```
+
+**Redux Integration**:
+```javascript
+import { useSelector } from 'react-redux';
+import { selectUser } from '../redux/slices/authSlice';
+
+function NavigationBar() {
+  const user = useSelector(selectUser);
+  
+  return (
+    <nav>
+      {/* Navigation content */}
+    </nav>
+  );
 }
 ```
 
@@ -632,6 +705,31 @@ const handleAddRelativeSubmit = async (formData) => {
 <ZoomControls />
 ```
 
+**Redux Integration**:
+```javascript
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectZoomLevel,
+  zoomIn,
+  zoomOut,
+  resetTreeView 
+} from '../redux/slices/treeSlice';
+
+function ZoomControls() {
+  const dispatch = useDispatch();
+  const zoomLevel = useSelector(selectZoomLevel);
+  
+  return (
+    <div className="zoom-controls">
+      <button onClick={() => dispatch(zoomIn())}>+</button>
+      <span>{zoomLevel}%</span>
+      <button onClick={() => dispatch(zoomOut())}>-</button>
+      <button onClick={() => dispatch(resetTreeView())}>Reset</button>
+    </div>
+  );
+}
+```
+
 ---
 
 ### LoadingSpinner
@@ -700,12 +798,7 @@ App
 │   │   ├── CreateEventModal
 │   │   └── InviteExternalGuestsModal
 │   └── ...
-└── Providers
-    ├── AuthProvider
-    ├── UserProvider
-    ├── FamilyProvider
-    ├── DashboardProvider
-    └── TreeProvider
+└── Redux Provider (wraps entire app)
 ```
 
 ---
@@ -716,8 +809,45 @@ App
 1. Keep components focused and single-responsibility
 2. Use props for configuration
 3. Lift state up when needed
-4. Use Context for global state
+4. Use Redux for global state
 5. Memoize expensive components
+
+### State Management
+1. Use Redux for global application state
+2. Use local state (useState) for UI-only state
+3. Use useSelector to read from Redux store
+4. Use useDispatch to dispatch actions
+5. Handle async actions with .unwrap() for error handling
+
+### Redux Patterns
+1. Create selectors for accessing state
+2. Use memoized selectors for derived data
+3. Keep reducers pure and predictable
+4. Use async thunks for API calls
+5. Handle loading and error states consistently
+
+**Example Redux Usage**:
+```javascript
+import { useSelector, useDispatch } from 'react-redux';
+import { selectFamilyMembers, addFamilyMember } from '../redux/slices/familySlice';
+
+function MyComponent() {
+  const dispatch = useDispatch();
+  const members = useSelector(selectFamilyMembers);
+  
+  const handleAdd = async (data) => {
+    try {
+      await dispatch(addFamilyMember(data)).unwrap();
+      // Success handling
+    } catch (error) {
+      // Error handling
+      console.error(error);
+    }
+  };
+  
+  return <div>{/* Component JSX */}</div>;
+}
+```
 
 ### Styling
 1. Use CSS modules or scoped CSS

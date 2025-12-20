@@ -1,7 +1,14 @@
-import { useState } from 'react';
-import { DashboardProvider } from '../contexts/DashboardContext';
-import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser } from '../redux/slices/authSlice';
+import { selectProfile } from '../redux/slices/userSlice';
+import { 
+  loadDashboardData, 
+  selectDashboardData, 
+  selectDashboardLoading,
+  selectSectionLoading,
+  selectSectionError 
+} from '../redux/slices/dashboardSlice';
 import NavigationBar from '../components/NavigationBar';
 import RecentUpdates from '../components/RecentUpdates';
 import QuickActions from '../components/QuickActions';
@@ -10,10 +17,18 @@ import OnlineNow from '../components/OnlineNow';
 import AddRelativeModal from '../components/AddRelativeModal';
 import './DashboardPage.css';
 
-const DashboardContent = () => {
-  const { user } = useAuth();
-  const { profile } = useUser();
+const DashboardPage = () => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const profile = useSelector(selectProfile);
+  const dashboardData = useSelector(selectDashboardData);
+  const isLoading = useSelector(selectDashboardLoading);
   const [isAddRelativeModalOpen, setIsAddRelativeModalOpen] = useState(false);
+
+  // Load dashboard data on mount
+  useEffect(() => {
+    dispatch(loadDashboardData());
+  }, [dispatch]);
   
   // Get user's first name from profile or auth user
   const firstName = profile?.firstName || user?.fullName?.split(' ')[0] || 'User';
@@ -21,7 +36,7 @@ const DashboardContent = () => {
     ? `${profile?.firstName} ${profile?.lastName}` 
     : user?.fullName || 'User';
 
-  // Mock data for Recent Updates
+  // Mock data for Recent Updates (will be replaced with Redux data)
   const mockUpdates = [
     {
       id: '1',
@@ -60,7 +75,7 @@ const DashboardContent = () => {
     console.log('View all updates');
   };
 
-  // Mock data for Upcoming Events
+  // Mock data for Upcoming Events (will be replaced with Redux data)
   const mockEvents = [
     {
       id: '1',
@@ -85,7 +100,7 @@ const DashboardContent = () => {
     },
   ];
 
-  // Mock data for Online Users
+  // Mock data for Online Users (will be replaced with Redux data)
   const mockOnlineUsers = [
     {
       id: '1',
@@ -120,6 +135,20 @@ const DashboardContent = () => {
   const handleUserClick = (userId) => {
     console.log('User clicked:', userId);
   };
+
+  // Show loading state
+  if (isLoading && !dashboardData) {
+    return (
+      <div className="dashboard-page">
+        <NavigationBar />
+        <main className="dashboard-main">
+          <div className="dashboard-container">
+            <div className="dashboard-loading">Loading dashboard...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-page">
@@ -175,14 +204,6 @@ const DashboardContent = () => {
         </div>
       </main>
     </div>
-  );
-};
-
-const DashboardPage = () => {
-  return (
-    <DashboardProvider>
-      <DashboardContent />
-    </DashboardProvider>
   );
 };
 

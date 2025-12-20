@@ -1,9 +1,11 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthLoading } from '../redux/slices/authSlice';
 import LoadingSpinner from './LoadingSpinner';
 
 const PublicRoute = ({ children, redirectTo = '/dashboard' }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isLoading = useSelector(selectAuthLoading);
 
   if (isLoading) {
     return <LoadingSpinner fullscreen />;

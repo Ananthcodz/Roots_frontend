@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { useFamily } from '../contexts/FamilyContext';
-import { useUser } from '../contexts/UserContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFamilyMember, selectFamilyLoading } from '../redux/slices/familySlice';
+import { selectProfile } from '../redux/slices/userSlice';
+import { selectUser } from '../redux/slices/authSlice';
 import NavigationBar from '../components/NavigationBar';
 import BackLink from '../components/BackLink';
 import Input from '../components/Input';
@@ -17,9 +18,10 @@ const AddFamilyMemberPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { addFamilyMember, isLoading } = useFamily();
-  const { profile } = useUser();
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectFamilyLoading);
+  const profile = useSelector(selectProfile);
+  const user = useSelector(selectUser);
 
   // Get URL params
   const relationshipTypeParam = searchParams.get('type');
@@ -27,7 +29,7 @@ const AddFamilyMemberPage = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    relatedTo: relatedToParam || user?.uid || '',
+    relatedTo: relatedToParam || user?.id || '',
     relationshipType: relationshipTypeParam || '',
     specificLabel: '',
     profilePhoto: null,
@@ -211,7 +213,7 @@ const AddFamilyMemberPage = () => {
         profilePhoto: formData.profilePhoto,
       };
 
-      await addFamilyMember(memberData);
+      await dispatch(addFamilyMember(memberData)).unwrap();
       navigate(getBackPath());
     } catch (error) {
       console.error('Failed to add family member:', error);
@@ -226,7 +228,7 @@ const AddFamilyMemberPage = () => {
       } else {
         setErrors(prev => ({
           ...prev,
-          submit: error.message || 'Failed to add family member. Please try again.',
+          submit: error.message || error || 'Failed to add family member. Please try again.',
         }));
       }
     } finally {

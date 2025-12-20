@@ -1,15 +1,34 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import fc from 'fast-check';
 import ZoomControls from './ZoomControls';
-import { TreeProvider } from '../contexts/TreeContext';
+import treeReducer from '../redux/slices/treeSlice';
+import familyReducer from '../redux/slices/familySlice';
+import userReducer from '../redux/slices/userSlice';
+import authReducer from '../redux/slices/authSlice';
+import memoryReducer from '../redux/slices/memorySlice';
+import dashboardReducer from '../redux/slices/dashboardSlice';
 
-// Test wrapper with TreeProvider
-const TestWrapper = ({ children }) => (
-  <TreeProvider>
-    {children}
-  </TreeProvider>
-);
+// Test wrapper with Redux store
+const createTestStore = () => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      user: userReducer,
+      family: familyReducer,
+      memory: memoryReducer,
+      dashboard: dashboardReducer,
+      tree: treeReducer,
+    },
+  });
+};
+
+const TestWrapper = ({ children }) => {
+  const store = createTestStore();
+  return <Provider store={store}>{children}</Provider>;
+};
 
 describe('ZoomControls Property Tests', () => {
   afterEach(() => {

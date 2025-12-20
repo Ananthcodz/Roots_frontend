@@ -1,5 +1,14 @@
 import { useRef, useEffect, useMemo, useCallback } from 'react';
-import { useTree } from '../contexts/TreeContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectSelectedMemberId, 
+  selectSearchResults, 
+  selectZoomLevel, 
+  selectPanOffset,
+  pan,
+  adjustZoom,
+  setSelectedMember
+} from '../redux/slices/treeSlice';
 import { buildTreeStructure } from '../utils/treeLayout';
 import TreeNode from './TreeNode';
 import './TreeCanvas.css';
@@ -16,15 +25,11 @@ const TreeCanvas = ({
   onPlaceholderClick,
   rootCardRef
 }) => {
-  const { 
-    selectedMemberId, 
-    searchResults, 
-    zoomLevel, 
-    panOffset,
-    handlePan,
-    handleZoom,
-    setSelectedMemberId
-  } = useTree();
+  const dispatch = useDispatch();
+  const selectedMemberId = useSelector(selectSelectedMemberId);
+  const searchResults = useSelector(selectSearchResults);
+  const zoomLevel = useSelector(selectZoomLevel);
+  const panOffset = useSelector(selectPanOffset);
   
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
@@ -71,12 +76,12 @@ const TreeCanvas = ({
       const deltaY = e.clientY - dragStart.current.y;
 
       // Update pan offset
-      handlePan(
-        deltaX - (panOffset.x - lastPanOffset.current.x),
-        deltaY - (panOffset.y - lastPanOffset.current.y)
-      );
+      dispatch(pan({
+        deltaX: deltaX - (panOffset.x - lastPanOffset.current.x),
+        deltaY: deltaY - (panOffset.y - lastPanOffset.current.y)
+      }));
     });
-  }, [handlePan, panOffset]);
+  }, [dispatch, panOffset]);
 
   // Handle mouse up - stop dragging
   const handleMouseUp = () => {
@@ -94,7 +99,7 @@ const TreeCanvas = ({
     
     // Determine zoom direction
     const delta = e.deltaY > 0 ? -10 : 10;
-    handleZoom(delta);
+    dispatch(adjustZoom(delta));
   };
 
   // Handle touch start - start dragging or pinch zoom
@@ -136,10 +141,10 @@ const TreeCanvas = ({
         const deltaX = e.touches[0].clientX - dragStart.current.x;
         const deltaY = e.touches[0].clientY - dragStart.current.y;
 
-        handlePan(
-          deltaX - (panOffset.x - lastPanOffset.current.x),
-          deltaY - (panOffset.y - lastPanOffset.current.y)
-        );
+        dispatch(pan({
+          deltaX: deltaX - (panOffset.x - lastPanOffset.current.x),
+          deltaY: deltaY - (panOffset.y - lastPanOffset.current.y)
+        }));
       } else if (e.touches.length === 2) {
         // Two touches - pinch zoom
         const touch1 = e.touches[0];
@@ -155,11 +160,11 @@ const TreeCanvas = ({
         const zoomDelta = clampedZoom - zoomLevel;
         
         if (Math.abs(zoomDelta) > 1) {
-          handleZoom(zoomDelta);
+          dispatch(adjustZoom(zoomDelta));
         }
       }
     });
-  }, [handlePan, handleZoom, panOffset, zoomLevel]);
+  }, [dispatch, panOffset, zoomLevel]);
 
   // Handle touch end - stop dragging
   const handleTouchEnd = () => {

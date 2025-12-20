@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMemory } from '../contexts/MemoryContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  uploadPhotos, 
+  getAlbums, 
+  selectAlbums, 
+  selectMemoryLoading, 
+  selectUploadProgress 
+} from '../redux/slices/memorySlice';
+import MemoryService from '../services/MemoryService';
 import NavigationBar from '../components/NavigationBar';
 import BackLink from '../components/BackLink';
 import PhotoDropzone from '../components/PhotoDropzone';
@@ -14,7 +22,15 @@ import './UploadPhotosPage.css';
 
 const UploadPhotosPage = () => {
   const navigate = useNavigate();
-  const { uploadPhotos, getAlbums, searchFamilyMembers, albums, isLoading, uploadProgress } = useMemory();
+  const dispatch = useDispatch();
+  
+  // Redux state
+  const albums = useSelector(selectAlbums);
+  const isLoading = useSelector(selectMemoryLoading);
+  const uploadProgress = useSelector(selectUploadProgress);
+
+  // Mock mode for development
+  const MOCK_MODE = import.meta.env.VITE_MOCK_API === 'true';
 
   // Form state
   const [formData, setFormData] = useState({
@@ -36,8 +52,8 @@ const UploadPhotosPage = () => {
 
   // Load albums on mount
   useEffect(() => {
-    getAlbums();
-  }, []);
+    dispatch(getAlbums());
+  }, [dispatch]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -104,8 +120,36 @@ const UploadPhotosPage = () => {
   const handleTagSearch = async (query) => {
     setSearchQuery(query);
     try {
-      const results = await searchFamilyMembers(query);
-      setSearchResults(results);
+      // searchFamilyMembers doesn't need to be in Redux state (per design doc requirement 5.5)
+      // Call the service directly for search operations
+      if (MOCK_MODE) {
+        // Mock response for development
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const mockMembers = [
+          {
+            id: 'mock-member-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            photoUrl: null,
+          },
+          {
+            id: 'mock-member-2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            photoUrl: null,
+          },
+        ];
+        
+        // Filter by query
+        const filtered = mockMembers.filter(member =>
+          `${member.firstName} ${member.lastName}`.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        setSearchResults(filtered);
+      } else {
+        const results = await MemoryService.searchMembers(query);
+        setSearchResults(results);
+      }
     } catch (error) {
       console.error('Failed to search family members:', error);
       setSearchResults([]);
@@ -190,9 +234,13 @@ const UploadPhotosPage = () => {
         taggedPeople: formData.taggedPeople,
       };
 
-      const result = await uploadPhotos(formData.selectedFiles, memoryData, (progress) => {
-        // Progress is already tracked by context
-      });
+      const result = await dispatch(uploadPhotos({
+        files: formData.selectedFiles,
+        memoryData,
+        onProgress: (progress) => {
+          // Progress is already tracked by Redux
+        }
+      })).unwrap();
 
       // Check for partial failures
       if (result.hasPartialFailures) {
@@ -224,7 +272,7 @@ const UploadPhotosPage = () => {
       } else {
         setErrors(prev => ({
           ...prev,
-          submit: error.message || 'Failed to upload photos. Please try again.',
+          submit: error.message || error || 'Failed to upload photos. Please try again.',
         }));
       }
     } finally {

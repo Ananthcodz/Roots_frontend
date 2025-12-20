@@ -1,25 +1,62 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import FamilyTreePage from './FamilyTreePage';
-import { TreeProvider } from '../contexts/TreeContext';
-import { FamilyProvider } from '../contexts/FamilyContext';
-import { UserProvider } from '../contexts/UserContext';
-import { AuthProvider } from '../contexts/AuthContext';
+import authReducer from '../redux/slices/authSlice';
+import userReducer from '../redux/slices/userSlice';
+import familyReducer from '../redux/slices/familySlice';
+import treeReducer from '../redux/slices/treeSlice';
 
-const AllProviders = ({ children }) => (
-  <BrowserRouter>
-    <AuthProvider>
-      <UserProvider>
-        <FamilyProvider>
-          <TreeProvider>
-            {children}
-          </TreeProvider>
-        </FamilyProvider>
-      </UserProvider>
-    </AuthProvider>
-  </BrowserRouter>
-);
+const createMockStore = () => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      user: userReducer,
+      family: familyReducer,
+      tree: treeReducer,
+    },
+    preloadedState: {
+      auth: {
+        user: { id: '1', email: 'test@test.com', fullName: 'Test User' },
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      },
+      user: {
+        profile: { firstName: 'Test', lastName: 'User' },
+        isLoading: false,
+        error: null,
+      },
+      family: {
+        familyMembers: [],
+        relationships: [],
+        isLoading: false,
+        error: null,
+      },
+      tree: {
+        selectedMemberId: null,
+        searchQuery: '',
+        searchResults: [],
+        zoomLevel: 100,
+        panOffset: { x: 0, y: 0 },
+        showFirstTimeTooltip: false,
+      },
+    },
+  });
+};
+
+const AllProviders = ({ children }) => {
+  const store = createMockStore();
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </Provider>
+  );
+};
 
 describe('FamilyTreePage Integration Tests', () => {
   it('should render the family tree page without errors', () => {
