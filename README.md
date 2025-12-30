@@ -1,5 +1,5 @@
-# Synora
-Synora - Together in Greek
+# Roots
+Frontend of roots project
 
 # React + Vite
 
