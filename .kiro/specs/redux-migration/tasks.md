@@ -44,7 +44,7 @@
     - Export all selectors
     - _Requirements: 2.1_
   
-  - [ ]* 2.4 Write auth slice tests
+  - [x] 2.4 Write auth slice tests
     - Test initial state
     - Test each async thunk (pending/fulfilled/rejected)
     - Test clearError reducer
@@ -71,7 +71,7 @@
     - Export all selectors
     - _Requirements: 3.1_
   
-  - [ ]* 3.4 Write user slice tests
+  - [x] 3.4 Write user slice tests
     - Test initial state
     - Test each async thunk
     - Test selectors
@@ -102,7 +102,7 @@
     - Export all selectors
     - _Requirements: 4.1_
   
-  - [ ]* 4.4 Write family slice tests
+  - [x] 4.4 Write family slice tests
     - Test initial state
     - Test each async thunk
     - Test relationship refresh logic
@@ -133,7 +133,7 @@
     - Export all selectors
     - _Requirements: 5.1, 5.6_
   
-  - [ ]* 5.4 Write memory slice tests
+  - [x] 5.4 Write memory slice tests
     - Test initial state
     - Test each async thunk
     - Test upload progress updates
@@ -162,7 +162,7 @@
     - Export all selectors
     - _Requirements: 6.1, 6.4_
   
-  - [ ]* 6.4 Write dashboard slice tests
+  - [x] 6.4 Write dashboard slice tests
     - Test initial state
     - Test each async thunk
     - Test section error handling
@@ -190,7 +190,7 @@
     - Export all selectors
     - _Requirements: 7.1_
   
-  - [ ]* 7.3 Write tree slice tests
+  - [x] 7.3 Write tree slice tests
     - Test initial state
     - Test all reducers
     - Test search filtering logic

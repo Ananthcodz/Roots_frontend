@@ -38,10 +38,10 @@ const ComponentDemo = () => {
   ];
 
   return (
-    <div className="demo-container">
-      <h1>Component Demo</h1>
-      
-      <section className="demo-section">
+      <div className="demo-container">
+        <h1>Component Demo</h1>
+
+        <section className="demo-section">
         <h2>Buttons</h2>
         <div className="demo-row">
           <Button variant="primary">Primary Button</Button>

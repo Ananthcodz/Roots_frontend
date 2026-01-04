@@ -4,6 +4,250 @@
   min-height: 100vh;
   background-color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Enable 3D context for child elements */
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* 3D Enhancement Classes */
+.landing-page.transforms-enabled {
+  --perspective: 1000px;
+  --lighting-direction: 135deg;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --shadow-hover-color: rgba(0, 0, 0, 0.25);
+  --depth-base: 10px;
+  --depth-hover: 20px;
+}
+
+/* 3D Hero Section Integration */
+.landing-hero-3d {
+  /* Remove default hero padding since Hero3DSection handles its own layout */
+  padding: 0;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* 3D Features Grid Integration */
+.features-3d-enhanced {
+  /* Ensure proper 3D context */
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.features-3d-enhanced .feature-card-3d {
+  /* Integrate with existing feature card styles */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.features-3d-enhanced .feature-card-3d:hover {
+  /* Enhanced hover effects for 3D cards */
+  box-shadow: 
+    0 25px 50px -12px var(--shadow-hover-color),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* 3D Statistics Integration */
+.story-stats-3d,
+.stats-grid-3d {
+  /* Ensure proper 3D context for statistics */
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.story-stats-3d .stat-3d-item,
+.stats-grid-3d .stat-3d-item {
+  /* Integrate with existing stat styles */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.story-stats-3d .stat-3d-item:hover,
+.stats-grid-3d .stat-3d-item:hover {
+  transform: translateY(-5px) rotateX(5deg);
+  box-shadow: 0 15px 30px -10px var(--shadow-color);
+}
+
+/* 3D Testimonials Integration */
+.landing-testimonials-3d {
+  /* Replace testimonials section with 3D version */
+  padding: 100px 0;
+  background-color: #ffffff;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* 3D CTA Integration */
+.landing-cta-3d {
+  /* Replace CTA section with 3D version */
+  padding: 120px 0;
+  background: linear-gradient(var(--lighting-direction), #0d7377 0%, #14a085 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-cta-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Lighting and Shadow Effects */
+.landing-page .shadow-3d-light {
+  box-shadow: 
+    0 4px 8px -2px var(--shadow-color),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.landing-page .shadow-3d-medium {
+  box-shadow: 
+    0 10px 25px -5px var(--shadow-color),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.landing-page .shadow-3d-heavy {
+  box-shadow: 
+    0 25px 50px -12px var(--shadow-color),
+    0 10px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.landing-page .shadow-3d-hover {
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-page .shadow-3d-hover:hover {
+  box-shadow: 
+    0 25px 50px -12px var(--shadow-hover-color),
+    0 15px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* 3D Lighting Effects */
+.landing-page .lighting-3d-ambient {
+  background: linear-gradient(var(--lighting-direction), 
+    rgba(255, 255, 255, 0.05) 0%, 
+    transparent 50%, 
+    rgba(0, 0, 0, 0.02) 100%);
+}
+
+.landing-page .lighting-3d-directional {
+  position: relative;
+}
+
+.landing-page .lighting-3d-directional::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(var(--lighting-direction), 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 30%, 
+    rgba(0, 0, 0, 0.05) 100%);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.landing-page .lighting-3d-directional:hover::before {
+  opacity: 1;
+}
+
+/* Theme Consistency for 3D Elements */
+.landing-page .theme-3d-teal {
+  --primary-3d-color: #0d7377;
+  --primary-3d-light: #14a085;
+  --primary-3d-shadow: rgba(13, 115, 119, 0.3);
+}
+
+.landing-page .theme-3d-light {
+  --bg-3d-color: #ffffff;
+  --bg-3d-shadow: rgba(0, 0, 0, 0.1);
+  --text-3d-color: #1f2937;
+}
+
+.landing-page .theme-3d-dark {
+  --bg-3d-color: #1f2937;
+  --bg-3d-shadow: rgba(0, 0, 0, 0.3);
+  --text-3d-color: #ffffff;
+}
+
+/* 3D Transform Utilities */
+.landing-page .transform-3d-lift {
+  transform: translateZ(var(--depth-base));
+}
+
+.landing-page .transform-3d-lift:hover {
+  transform: translateZ(var(--depth-hover));
+}
+
+.landing-page .transform-3d-tilt {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-page .transform-3d-tilt:hover {
+  transform: rotateX(-5deg) rotateY(5deg) translateZ(10px);
+}
+
+/* Performance Optimizations for 3D */
+.landing-page .will-change-3d {
+  will-change: transform, box-shadow, opacity;
+}
+
+.landing-page .gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .landing-page .transform-3d-lift,
+  .landing-page .transform-3d-tilt,
+  .landing-page .shadow-3d-hover {
+    transition: none;
+    transform: none;
+  }
+  
+  .landing-page .lighting-3d-directional::before {
+    display: none;
+  }
+  
+  .landing-page {
+    perspective: none;
+    transform-style: flat;
+  }
+}
+
+/* Mobile 3D Optimizations */
+@media (max-width: 768px) {
+  .landing-page.transforms-enabled {
+    --perspective: 800px;
+    --depth-base: 5px;
+    --depth-hover: 10px;
+  }
+  
+  .landing-page .shadow-3d-heavy {
+    box-shadow: 
+      0 15px 30px -10px var(--shadow-color),
+      0 5px 10px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .features-3d-enhanced {
+    perspective: 800px;
+  }
+  
+  .story-stats-3d,
+  .stats-grid-3d {
+    perspective: 600px;
+  }
 }
 
 /* Header & Navigation */
@@ -210,22 +454,35 @@
   background-color: #ff5533;
 }
 
-/* Stats Section */
+/* Stats Section - Enhanced for 3D Integration */
 .landing-stats {
   padding: 60px 0;
   background-color: #f9fafb;
   border-bottom: 1px solid #f0f0f0;
+  /* Add 3D context */
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
+/* Legacy stats grid - will be replaced by Statistics3D */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
   text-align: center;
+  /* Add 3D context for fallback */
+  transform-style: preserve-3d;
 }
 
 .stat-item {
   padding: 20px;
+  /* Add 3D hover effects */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px) translateZ(10px);
 }
 
 .stat-number {
@@ -263,16 +520,21 @@
   line-height: 1.6;
 }
 
-/* Features New Section */
+/* Features New Section - Enhanced for 3D Integration */
 .landing-features-new {
   padding: 60px 0;
   background-color: #f3f4f6;
+  /* Add 3D context */
+  transform-style: preserve-3d;
+  perspective: 1200px;
 }
 
 .features-new-header {
   text-align: center;
   max-width: 600px;
   margin: 0 auto 40px;
+  /* Add subtle 3D lift */
+  transform: translateZ(5px);
 }
 
 .features-new-header h2 {
@@ -290,12 +552,15 @@
   line-height: 1.6;
 }
 
+/* Legacy grid styles - will be replaced by Features3DGrid */
 .features-new-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   max-width: 1000px;
   margin: 0 auto;
+  /* Add 3D context for fallback */
+  transform-style: preserve-3d;
 }
 
 .feature-new-card {
@@ -304,11 +569,15 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: transform 0.2s;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  /* Add 3D enhancements */
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .feature-new-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(10px);
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
 }
 
 .feature-large {
@@ -399,10 +668,13 @@
   object-fit: cover;
 }
 
-/* Story Section */
+/* Story Section - Enhanced for 3D Statistics */
 .landing-story {
   padding: 100px 0;
   background-color: #f9fafb;
+  /* Add 3D context */
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .story-layout {
@@ -418,12 +690,16 @@
   line-height: 1.15;
   color: #111827;
   letter-spacing: -0.025em;
+  /* Add subtle 3D depth */
+  transform: translateZ(5px);
 }
 
 .story-right {
   display: flex;
   flex-direction: column;
   gap: 48px;
+  /* Add 3D context for statistics */
+  transform-style: preserve-3d;
 }
 
 .story-description p {
@@ -437,14 +713,24 @@
   margin-bottom: 0;
 }
 
+/* Legacy stats styles - will be replaced by Statistics3D */
 .story-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
+  /* Add 3D context for fallback */
+  transform-style: preserve-3d;
 }
 
 .story-stat-item {
   text-align: left;
+  /* Add 3D hover effects */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.story-stat-item:hover {
+  transform: translateY(-3px) translateZ(5px);
 }
 
 .story-stat-number {
